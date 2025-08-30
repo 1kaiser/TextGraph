@@ -3,7 +3,7 @@
  */
 
 import './d3-conventions';
-import { TextAsGraph } from './text-as-graph-fixed';
+import { TextAsGraph } from './text-as-graph-v2';
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
