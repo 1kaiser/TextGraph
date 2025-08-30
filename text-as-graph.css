@@ -1,0 +1,36 @@
+/* Text-as-graph specific styles */
+#text-as-graph {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+}
+
+#text-as-graph input {
+    font-family: monospace;
+    font-size: 30px;
+    word-spacing: 30px;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    width: 900px;
+    max-width: 100%;
+}
+
+#text-as-graph rect {
+    cursor: pointer;
+}
+
+#text-as-graph text {
+    user-select: none;
+    cursor: default;
+}
+
+#text-as-graph svg text.top,
+#text-as-graph svg text.side {
+    font-size: 12px;
+    fill: gray;
+}
+
+#text-as-graph svg rect {
+    shape-rendering: crispEdges;
+}
