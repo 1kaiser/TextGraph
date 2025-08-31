@@ -1,0 +1,131 @@
+📚 GAT ATTENTION MECHANISM - ASCII VISUALIZATION GUIDE
+====================================================
+
+🎯 SCENARIO: Paragraph with Target Sentence Analysis
+
+PARAGRAPH: "Neural networks are powerful tools. Graph attention mechanisms capture relationships. 
+           These models transform natural language processing."
+
+TARGET SENTENCE: "Graph attention mechanisms capture relationships"
+SENTENCE TOKENS: ["Graph", "attention", "mechanisms", "capture", "relationships"]
+
+STEP 1: PARAGRAPH TOKENIZATION
+=============================
+FULL_TOKENS = ["Neural", "networks", "are", "powerful", "tools", "Graph", 
+               "attention", "mechanisms", "capture", "relationships", "These", 
+               "models", "transform", "natural", "language", "processing"]
+
+INDICES:        0        1        2       3         4       5
+               6         7          8        9            10      
+               11       12        13       14        15
+
+TARGET_SENTENCE_INDICES = [5, 6, 7, 8, 9]  ← Focus tokens
+
+STEP 2: GAT ATTENTION COMPUTATION
+=================================
+For target sentence "Graph attention mechanisms capture relationships":
+
+ATTENTION SCORES (e_ij) - Raw values before softmax:
+```
+    PARAGRAPH CONTEXT (0-15)         TARGET SENTENCE (5-9)
+    0   1   2   3   4   |  5   6   7   8   9  | 10  11  12  13  14  15
+    ────────────────────┼──────────────────────┼─────────────────────────
+5 │ 0.1 0.2 0.0 0.1 0.3 │ 0.0 2.8 1.5 1.2 0.9│ 0.2 0.4 0.1 0.2 0.1 0.0  │ Graph
+6 │ 0.2 0.1 0.1 0.2 0.2 │ 2.1 0.0 2.9 1.8 1.4│ 0.1 0.3 0.2 0.1 0.3 0.2  │ attention  
+7 │ 0.1 0.3 0.0 0.1 0.1 │ 1.3 2.5 0.0 2.2 1.6│ 0.2 0.1 0.1 0.2 0.1 0.1  │ mechanisms
+8 │ 0.0 0.2 0.1 0.1 0.2 │ 1.0 1.7 2.0 0.0 2.4│ 0.1 0.2 0.3 0.1 0.2 0.1  │ capture
+9 │ 0.1 0.1 0.0 0.2 0.1 │ 0.8 1.2 1.4 2.1 0.0│ 0.3 0.1 0.2 0.4 0.1 0.2  │ relationships
+```
+
+HIGH ATTENTION PAIRS (> 2.0):
+• Graph → attention (2.8)      • attention → mechanisms (2.9)
+• attention → Graph (2.1)      • mechanisms → capture (2.2)  
+• capture → relationships (2.4) • relationships → capture (2.1)
+
+STEP 3: SOFTMAX NORMALIZATION
+=============================
+Normalized attention weights (α_ij) for TARGET SENTENCE:
+
+```
+ATTENTION MATRIX (After Softmax) - TARGET SENTENCE FOCUS:
+        0    1    2    3    4    |   5    6    7    8    9   | 10   11   12   13   14   15
+        ─────────────────────────┼───────────────────────────┼──────────────────────────────
+    5 │ 0.02 0.03 0.01 0.02 0.04 │ 0.00 0.52 0.18 0.15 0.08 │ 0.03 0.05 0.02 0.03 0.02 0.01 │ Graph
+    6 │ 0.03 0.02 0.02 0.03 0.03 │ 0.19 0.00 0.58 0.24 0.17 │ 0.02 0.04 0.03 0.02 0.04 0.03 │ attention
+    7 │ 0.02 0.04 0.01 0.02 0.02 │ 0.16 0.34 0.00 0.32 0.22 │ 0.03 0.02 0.02 0.03 0.02 0.02 │ mechanisms  
+    8 │ 0.01 0.03 0.02 0.02 0.03 │ 0.12 0.21 0.28 0.00 0.41 │ 0.02 0.03 0.04 0.02 0.03 0.02 │ capture
+    9 │ 0.02 0.02 0.01 0.03 0.02 │ 0.09 0.15 0.18 0.26 0.00 │ 0.04 0.02 0.03 0.05 0.02 0.03 │ relationships
+```
+
+STEP 4: COLOR MAPPING FOR VISUALIZATION
+======================================
+
+ATTENTION STRENGTH → COLOR MAPPING:
+• α ≥ 0.50: 🔴 RED    (Very High Attention)
+• α ≥ 0.30: 🟠 ORANGE (High Attention)  
+• α ≥ 0.15: 🟡 YELLOW (Medium Attention)
+• α ≥ 0.05: 🟢 GREEN  (Low Attention)
+• α <  0.05: ⚪ WHITE  (Minimal Attention)
+
+COLORED ADJACENCY MATRIX (TARGET SENTENCE ONLY):
+```
+        Graph  attention  mechanisms  capture  relationships
+        ──────────────────────────────────────────────────────
+Graph │  ⚪      🔴         🟡         🟡        🟢
+attention │ 🟡      ⚪         🔴         🟡        🟡  
+mechanisms│ 🟡      🟠         ⚪         🟠        🟡
+capture │  🟢      🟡         🟡         ⚪        🟠
+relationships│🟢      🟡         🟡         🟡        ⚪
+```
+
+STEP 5: GRAPH NODE COLORING
+===========================
+
+NODES colored by MAXIMUM ATTENTION RECEIVED:
+```
+Graph: max(0.52, 0.19, 0.16, 0.12, 0.09) = 0.52 → 🔴 RED
+attention: max(0.52, 0.58, 0.34, 0.21, 0.15) = 0.58 → 🔴 RED  
+mechanisms: max(0.18, 0.58, 0.32, 0.28, 0.18) = 0.58 → 🔴 RED
+capture: max(0.15, 0.24, 0.32, 0.41, 0.26) = 0.41 → 🟠 ORANGE
+relationships: max(0.08, 0.17, 0.22, 0.41, 0.05) = 0.41 → 🟠 ORANGE
+```
+
+FINAL COLORED GRAPH VISUALIZATION:
+==================================
+```
+        🔴 Graph ────0.52───► 🔴 attention ────0.58───► 🔴 mechanisms
+           ↑                     ↑                         ↑
+           │0.19                  │0.34                     │0.32
+           │                     │                         │
+           └─────────────────────┘                         │
+                                                           │
+                                   🟠 capture ◄────────────┘
+                                      ↑     │0.28
+                                      │0.41 │
+                                      │     ↓
+                                   🟠 relationships
+```
+
+ATTENTION FLOW INTERPRETATION:
+=============================
+1. 🔴 "attention" receives HIGHEST attention (0.58) from "mechanisms" 
+2. 🔴 "Graph" strongly attends to "attention" (0.52)
+3. 🔴 "mechanisms" gets strong attention from "attention" (0.58)
+4. 🟠 "capture" and "relationships" form medium-strength connection (0.41)
+5. Strong sequential flow: Graph → attention → mechanisms → capture → relationships
+
+KEY INSIGHTS:
+============
+• Core concept words ("Graph", "attention", "mechanisms") form tight cluster
+• Action words ("capture", "relationships") have moderate connections  
+• Attention weights reflect semantic relationships, not just adjacency
+• Color intensity shows information flow and importance in the sentence
+
+INTEGRATION STEPS FOR YOUR VISUALIZATION:
+========================================
+1. Extract target sentence from paragraph context
+2. Compute attention weights using GAT forward pass
+3. Apply color mapping to both adjacency matrix and graph nodes
+4. Render colored graph with attention-weighted connections
+5. Display colored adjacency matrix alongside graph
+6. Add interactive hover to show attention values
