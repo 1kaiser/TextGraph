@@ -4,6 +4,8 @@
   "description": "Exact implementation of Distill's text-as-graph visualization",
   "main": "index.js",
   "scripts": {
+    "start": "parcel index.html --no-hmr --host 0.0.0.0 --port 3000",
+    "start:gat": "parcel gat-simple.html --no-hmr --host 0.0.0.0 --port 42040",
     "dev": "parcel index.html --no-hmr",
     "dev:gat": "parcel gat-simple.html --no-hmr --host 0.0.0.0 --port 42040",
     "build": "parcel build index.html --public-url ./",

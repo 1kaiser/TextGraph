@@ -2,6 +2,10 @@
 
 Interactive text-to-graph visualization with Graph Attention Networks (GAT) computation and transparency-based attention mapping.
 
+![TextGraph GAT Visualization](screenshots/gat-simple-complete.png)
+
+> **Graph Attention Networks in action**: The visualization shows attention weights through node transparency and adjacency matrix colors, demonstrating how different words in a query attend to each other with mathematically computed attention scores.
+
 ## 🎯 Overview
 
 This system implements a complete GAT attention visualization where:
@@ -13,11 +17,21 @@ This system implements a complete GAT attention visualization where:
 
 ## 🚀 Quick Start
 
+### One-Line Server Start
 ```bash
-npm run dev -- --host 0.0.0.0 --port 42040
+./start-server.sh          # Main TextGraph visualization
+./start-gat-server.sh      # GAT attention visualization
 ```
 
-Access: http://localhost:42040
+### Manual Start
+```bash
+npm run start              # Main app: localhost:3000 + local IP
+npm run start:gat          # GAT app: localhost:42040 + local IP
+```
+
+**Access:**
+- 📍 **Local**: http://localhost:3000 (main) | http://localhost:42040 (GAT)  
+- 🌐 **Network**: http://[YOUR_LOCAL_IP]:3000 | http://[YOUR_LOCAL_IP]:42040
 
 ## 📱 Interface
 
@@ -111,5 +125,33 @@ Result: Transparency-mapped visualization
 - **MathJax**: Mathematical attention computation
 - **D3.js**: SVG-based matrix and graph rendering  
 - **JavaScript ES6**: Module-based architecture
-- **Vite**: Development server with hot reload
+- **Parcel**: Development server with hot reload
 - **Playwright**: Multi-worker testing and validation
+
+## 📚 References
+
+### Core Papers & Publications
+- **[Attention Is All You Need](https://arxiv.org/abs/1706.03762)** - Vaswani et al. (2017) - Foundational transformer attention mechanism
+- **[Graph Attention Networks](https://arxiv.org/abs/1710.10903)** - Veličković et al. (2018) - GAT architecture and attention computation
+- **[Text as Graph](https://distill.pub/2021/gnn-intro/)** - Google Distill (2021) - Interactive visualization inspiration
+
+### Implementation References  
+- **[D3.js v5 Documentation](https://d3js.org/)** - SVG visualization and DOM manipulation
+- **[Parcel Bundler](https://parceljs.org/)** - Zero-configuration build system
+- **[MathJax](https://www.mathjax.org/)** - Mathematical notation rendering
+- **[Playwright Testing](https://playwright.dev/)** - Automated browser testing framework
+
+### Mathematical Background
+- **Softmax Normalization**: Row-wise probability distribution for attention weights
+- **LeakyReLU Activation**: `f(x) = max(0.01x, x)` for attention score computation
+- **Dot Product Attention**: `Attention(Q,K,V) = softmax(QK^T/√d_k)V`
+- **Graph Adjacency Matrices**: Representing word relationships as mathematical structures
+
+### Development Resources
+- **Local Network Access**: Automatic IP detection with `ip route get 1`
+- **Cross-Platform Compatibility**: Bash scripts with fallback IP resolution
+- **Hot Reload Development**: Parcel dev server with `--no-hmr` for stability
+
+---
+
+*This implementation provides a complete educational tool for understanding Graph Attention Networks through interactive visualization of attention weights, mathematical computation transparency, and real-time exploration of attention patterns.*
