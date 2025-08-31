@@ -1,8 +1,10 @@
 /**
- * Fixed implementation of text-as-graph visualization
+ * Exact implementation of text-as-graph using proper d3-jetpack conventions
+ * Matches the original Distill implementation precisely
  */
 
 import * as d3 from 'd3';
+import 'd3-jetpack';
 
 const padding = 30;
 const wordSpacing = 30;
@@ -14,9 +16,9 @@ const blueDark = steelblue.darker(2);
 
 export class TextAsGraph {
   private rectSel;
-  private arrowSel;
-  private wordSel;
+  private textSel;
   private inputNode;
+  private rectData;
   private sel = d3.select('#text-as-graph');
   private wordsHolder = this.sel.append('div');
   private coords = [null, null];
@@ -25,6 +27,8 @@ export class TextAsGraph {
   constructor() {
     // Make the z index lower to make overflow go behind words.
     this.sel.parent().style('z-index', '-1');
+    
+    // Use exact d3.conventions from d3-jetpack
     const c = d3.conventions({ 
       sel: this.wordsHolder, 
       margin: { left: 0 }, 
@@ -36,19 +40,11 @@ export class TextAsGraph {
     divSel.st({ left: padding, top: 20 + padding, height: 30 });
     const that = this;
     const inputSel = divSel.append('input')
-      .st({ 
-        'word-spacing': wordSpacing + 'px', 
-        fontSize,
-        background: 'transparent',
-        border: 'none',
-        outline: 'none',
-        position: 'absolute',
-        zIndex: 10,
-        color: 'transparent'  // Hide the input text
-      })
+      .st({ 'word-spacing': wordSpacing + 'px', fontSize })
       .at({ maxlength: 30 })
       .on('input', () => this.render())
       .on('mousemove', function () {
+        // Calculate what word we're on by figuring out how much space they each take up.
         const x = d3.mouse(this)[0];
         let offset = 0;
         let wordIdx = 0;
@@ -67,87 +63,63 @@ export class TextAsGraph {
     this.inputNode = inputSel.node();
     this.inputNode.value = 'Graphs are all around us';
 
-    const height = 100;
+    const height = 100; // height of input node
 
-    // Create groups for rectangles, words, and arrows
-    const rectGroup = svgSel.append('g').attr('class', 'rects');
-    const wordGroup = svgSel.append('g').attr('class', 'words');
-    const arrowGroup = svgSel.append('g').attr('class', 'arrows');
+    this.rectData = d3.range(20).map(i => ({ i }));
 
-    this.rectSel = rectGroup;
-    this.wordSel = wordGroup;
-    this.arrowSel = arrowGroup;
+    // Use d3-jetpack's appendMany method
+    this.rectSel = svgSel.appendMany('rect', this.rectData)
+      .at({ 
+        stroke: '#000', 
+        fill: d => `hsl(51, 100%, ${Math.random()*75 + 25}%)`, 
+        height: height / 2, 
+        y: height / 4, 
+        'rx': height / 6, 
+        'ry': height / 6 
+      })
+      .translate(padding, 0)
+      .each(function (d) { d.rectSel = d3.select(this); });
+
+    this.textSel = svgSel.appendMany('text', this.rectData)
+      .text('→')
+      .at({ y: height / 2, dy: '.33em', textAnchor: 'middle', fill: blue })
+      .st({ fontSize: 30 })
+      .translate(padding, 0)
+      .each(function (d) { d.textSel = d3.select(this); });
 
     this.adjMatSel = this.sel.append('svg')
-      .st({ position: 'absolute', top: 150, left: 50, overflow: 'visible' });
+      .st({ position: 'absolute', top: 150, left: 50 });
 
     this.render();
   }
 
   private render() {
-    // Clear previous elements
-    this.rectSel.selectAll('*').remove();
-    this.wordSel.selectAll('*').remove();
-    this.arrowSel.selectAll('*').remove();
+    this.rectSel.at({ opacity: 0 });
+    this.textSel.at({ opacity: 0 });
 
     const words = this.inputNode.value.split(' ').map((word, i) => ({ word, i }));
-    
+
     let x = 0;
     const pad = 5;
     const spaceWidth = charWidth + wordSpacing;
-    const height = 100;
 
-    // Draw rectangles and word labels
-    words.forEach((d, i) => {
+    words.forEach(d => {
       const width = d.word.length * charWidth;
 
-      // Add rectangle
-      this.rectSel.append('rect')
-        .attr('x', x - pad + padding)
-        .attr('y', height / 4)
-        .attr('width', width + pad * 2)
-        .attr('height', height / 2)
-        .attr('rx', height / 6)
-        .attr('ry', height / 6)
-        .attr('fill', `hsl(51, 100%, ${Math.random()*50 + 50}%)`)
-        .attr('stroke', '#000')
-        .attr('stroke-width', 1)
-        .attr('data-index', i)
-        .on('mouseover', () => this.hover(i, i))
-        .on('mouseout', () => this.hover());
-
-      // Add word text
-      this.wordSel.append('text')
-        .attr('x', x + width / 2 + padding)
-        .attr('y', height / 2)
-        .attr('dy', '.33em')
-        .attr('text-anchor', 'middle')
-        .attr('fill', '#000')
-        .attr('font-family', 'monospace')
-        .attr('font-size', fontSize)
-        .attr('pointer-events', 'none')
-        .text(d.word);
+      this.rectData[d.i].rectSel
+        .at({ opacity: 1, x: x - pad, width: width + pad * 2 });
 
       x += width + spaceWidth;
 
-      // Add arrow if not last word
-      if (i < words.length - 1) {
-        this.arrowSel.append('text')
-          .attr('x', x - spaceWidth / 2 + padding)
-          .attr('y', height / 2)
-          .attr('dy', '.33em')
-          .attr('text-anchor', 'middle')
-          .attr('fill', blue)
-          .attr('font-size', 30)
-          .attr('data-from', i)
-          .attr('data-to', i + 1)
-          .text('→');
-      }
+      if (!words[d.i + 1]) return; // skip arrow for last word
+
+      this.rectData[d.i].textSel
+        .at({ opacity: 1, x: x - spaceWidth / 2 });
     });
 
     // Center the words
-    const totalWidth = this.wordsHolder.node().getBoundingClientRect().width;
-    this.wordsHolder.st({ left: (totalWidth - x) / 2 });
+    const width = this.wordsHolder.node().getBoundingClientRect().width;
+    this.wordsHolder.st({ left: (width - x) / 2 });
 
     this.makeAdjMat(words);
   }
@@ -162,7 +134,6 @@ export class TextAsGraph {
     const pairs = d3.cross(words, words);
     const w = 20;
     
-    // Add adjacency matrix rectangles
     this.adjMatSel
       .selectAll('rect')
       .data(pairs)
@@ -177,7 +148,7 @@ export class TextAsGraph {
       .on('mouseover', d => this.hover(d[0].i, d[1].i))
       .on('mouseout', d => this.hover());
 
-    // Center adj matrix
+    // center adj matrix
     const width = this.wordsHolder.node().getBoundingClientRect().width;
     this.adjMatSel.st({ left: (width - w * words.length) / 2 });
 
@@ -203,7 +174,7 @@ export class TextAsGraph {
   }
 
   private isEdge(d) {
-    return d[1].i - d[0].i === 1;
+    return d[0].i - d[1].i === 1;
   }
 
   private hover(i?: number, j?: number) {
@@ -217,7 +188,7 @@ export class TextAsGraph {
       .attr('fill', d => !this.isEdge(d) ? 'white' : 
         (d[0].i === i && d[1].i === j ? blueDark : blue));
 
-    // Highlight the text on the adj mat
+    // highlight the text on the adj mat
     const highlightColor = '#000';
     this.adjMatSel.selectAll('text.top')
       .attr('fill', d => d.i === i ? highlightColor : 'gray')
@@ -226,34 +197,18 @@ export class TextAsGraph {
       .attr('fill', d => d.i === j ? highlightColor : 'gray')
       .style('font-weight', d => d.i === j ? 'bold' : '');
 
-    // Highlight rectangles
-    this.rectSel.selectAll('rect')
-      .attr('stroke', function() {
-        const idx = +this.getAttribute('data-index');
-        return (idx === i || idx === j) ? highlightColor : '#000';
-      })
-      .attr('stroke-width', function() {
-        const idx = +this.getAttribute('data-index');
-        return (idx === i || idx === j) ? 3 : 1;
+    this.rectSel.each(function(dRectSel) {
+      dRectSel.rectSel.at({
+        stroke: d => (d.i === i || d.i === j) ? highlightColor : '#000',
+        strokeWidth: d => (d.i === i || d.i === j) ? 3 : 1,
       });
-
-    // Highlight arrows
-    this.arrowSel.selectAll('text')
-      .attr('stroke', function() {
-        const from = +this.getAttribute('data-from');
-        const to = +this.getAttribute('data-to');
-        return (from === j && to === i) ? blueDark : blue;
-      })
-      .attr('stroke-width', function() {
-        const from = +this.getAttribute('data-from');
-        const to = +this.getAttribute('data-to');
-        return (from === j && to === i) ? 4 : 0;
-      })
-      .attr('fill', function() {
-        const from = +this.getAttribute('data-from');
-        const to = +this.getAttribute('data-to');
-        return (from === j && to === i) ? blueDark : blue;
+      
+      dRectSel.textSel.at({
+        stroke: d => (d.i === j && j === i - 1) ? blueDark : blue,
+        strokeWidth: d => (d.i === j && j === i - 1) ? 4 : 0,
+        fill: d => (d.i === j && j === i - 1) ? blueDark : blue,
       });
+    });
   }
 }
 

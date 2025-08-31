@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-08-31T00:08:08.178Z",
+  "workers": [
+    {
+      "workerId": 1,
+      "taskType": "test-original",
+      "analysis": {
+        "hasContainer": true,
+        "hasInput": true,
+        "inputValue": "Graphs are all around us",
+        "inputEditable": true,
+        "rectCount": 45,
+        "textCount": 30,
+        "svgCount": 2,
+        "dimensions": {
+          "x": 608,
+          "y": 394.828125,
+          "width": 704,
+          "height": 290,
+          "top": 394.828125,
+          "right": 1312,
+          "bottom": 684.828125,
+          "left": 608
+        }
+      }
+    },
+    {
+      "workerId": 2,
+      "taskType": "test-ours",
+      "analysis": {
+        "hasContainer": true,
+        "hasInput": false,
+        "inputValue": null,
+        "inputEditable": false,
+        "rectCount": 0,
+        "textCount": 0,
+        "svgCount": 0,
+        "dimensions": {
+          "x": 576,
+          "y": 360.59375,
+          "width": 768,
+          "height": 300,
+          "top": 360.59375,
+          "right": 1344,
+          "bottom": 660.59375,
+          "left": 576
+        },
+        "hasD3": false,
+        "hasConventions": false
+      },
+      "errors": []
+    },
+    {
+      "workerId": 3,
+      "taskType": "test-interaction",
+      "error": "locator.waitFor: Timeout 5000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#text-as-graph input') to be visible\u001b[22m\n"
+    }
+  ],
+  "summary": {
+    "originalWorking": true,
+    "oursWorking": true
+  }
+}
