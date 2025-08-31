@@ -413,8 +413,8 @@ function updateAnyMatrixRects(attentionMatrix, queryTokens, minAttention, maxAtt
     const width = parseFloat(rect.attr('width'));
     const height = parseFloat(rect.attr('height'));
     
-    // Matrix cells are typically small squares
-    return width <= 30 && height <= 30 && Math.abs(width - height) <= 5;
+    // Matrix cells are typically small squares (updated for 1.3x size)
+    return width <= 40 && height <= 40 && Math.abs(width - height) <= 5;
   });
   
   console.log(`🎯 Found ${matrixRects.size()} potential matrix rectangles`);

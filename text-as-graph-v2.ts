@@ -162,11 +162,10 @@ export class TextAsGraph {
         .text(d.word);
     });
 
-    // Draw arrows with line wrapping support and collision avoidance
+    // Draw arrows with simple straight routing
     wordPositions.forEach((d, i) => {
       if (i < wordPositions.length - 1) {
         const nextWord = wordPositions[i + 1];
-        const rectHeight = height / 2;
         
         // Calculate connection points at word rectangle edges
         const fromX = d.x + d.width + pad * 2 + padding;
@@ -174,57 +173,17 @@ export class TextAsGraph {
         const toX = nextWord.x - pad + padding;
         const toY = nextWord.y + height / 2;
         
-        // Check if arrow needs to wrap to next line
-        if (d.line === nextWord.line) {
-          // Same line: horizontal arrow positioned above rectangles
-          const arrowY = d.y + height / 4 - 10; // Position above rectangles
-          
-          this.arrowSel.append('path')
-            .attr('d', `M ${fromX} ${fromY} L ${fromX + 15} ${arrowY} L ${toX - 15} ${arrowY} L ${toX} ${toY}`)
-            .attr('stroke', blue)
-            .attr('stroke-width', 2)
-            .attr('fill', 'none')
-            .attr('marker-end', 'url(#arrowhead)')
-            .attr('data-from', i)
-            .attr('data-to', i + 1);
-        } else {
-          // Different lines: curved arrow that goes around nodes
-          const clearanceY1 = d.y + height + 30; // Go below current line
-          const clearanceY2 = nextWord.y - 30; // Arrive above next line
-          const midX = Math.max(fromX + 50, toX - 50); // Avoid horizontal overlap
-          
-          // Create path that avoids all word rectangles
-          this.arrowSel.append('path')
-            .attr('d', `M ${fromX} ${fromY} 
-                       L ${fromX + 20} ${fromY}
-                       Q ${fromX + 40} ${fromY} ${fromX + 40} ${clearanceY1}
-                       L ${midX} ${clearanceY1}
-                       Q ${midX + 20} ${clearanceY1} ${midX + 20} ${clearanceY2}
-                       L ${toX - 20} ${clearanceY2}
-                       Q ${toX - 20} ${toY - 20} ${toX} ${toY}`)
-            .attr('stroke', blue)
-            .attr('stroke-width', 2)
-            .attr('fill', 'none')
-            .attr('marker-end', 'url(#arrowhead)')
-            .attr('data-from', i)
-            .attr('data-to', i + 1);
-        }
-        
-        // Add arrowhead marker if not exists
-        let defs = this.arrowSel.select('defs');
-        if (defs.empty()) {
-          defs = this.arrowSel.append('defs');
-          defs.append('marker')
-            .attr('id', 'arrowhead')
-            .attr('markerWidth', 10)
-            .attr('markerHeight', 7)
-            .attr('refX', 10)
-            .attr('refY', 3.5)
-            .attr('orient', 'auto')
-            .append('polygon')
-            .attr('points', '0 0, 10 3.5, 0 7')
-            .attr('fill', blue);
-        }
+        // Use simple straight arrows for all connections
+        this.arrowSel.append('text')
+          .attr('x', (fromX + toX) / 2)
+          .attr('y', (fromY + toY) / 2)
+          .attr('dy', '.33em')
+          .attr('text-anchor', 'middle')
+          .attr('fill', blue)
+          .attr('font-size', 30)
+          .attr('data-from', i)
+          .attr('data-to', i + 1)
+          .text('→');
       }
     });
 
