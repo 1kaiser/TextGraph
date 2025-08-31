@@ -48,6 +48,9 @@ verify-*.js
 test-*.js
 multi-worker-*.js
 *-report-*.json
+check-*.js
+quick-*.js
+gat-attention-ascii-demo.txt
 
 # OS files
 Thumbs.db
