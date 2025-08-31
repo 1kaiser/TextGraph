@@ -149,11 +149,15 @@ export class TextAsGraph {
       }
     });
 
-    // Center the words using full screen width
+    // Center the entire graph by translating the SVG groups
     const screenWidth = window.innerWidth;
-    const actualGraphWidth = x - wordSpacing; // Remove trailing space 
-    const centerOffset = (screenWidth - actualGraphWidth) / 2;
-    this.wordsHolder.st({ left: Math.max(50, centerOffset) + 'px' });
+    const actualGraphWidth = x - wordSpacing; // Remove trailing space
+    const centerOffset = (screenWidth - actualGraphWidth) / 2 - padding;
+    
+    // Apply translation to center all SVG elements
+    this.rectSel.attr('transform', `translate(${centerOffset}, 0)`);
+    this.wordSel.attr('transform', `translate(${centerOffset}, 0)`);
+    this.arrowSel.attr('transform', `translate(${centerOffset}, 0)`);
 
     this.makeAdjMat(words);
   }
