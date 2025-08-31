@@ -84,6 +84,12 @@ gat-explorer.html
 gat-explorer.css
 gat-explorer.js
 
+# TypeScript development versions
+text-as-graph.ts
+text-as-graph-exact.ts
+text-as-graph-fixed.ts
+!text-as-graph-v2.ts
+
 # Git filter-branch artifacts
 .git/refs/original/
 .git-rewrite/
