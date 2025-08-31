@@ -4,6 +4,9 @@
     width: 100%;
     min-height: 400px;
     margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 #text-as-graph input {

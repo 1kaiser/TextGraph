@@ -151,8 +151,9 @@ export class TextAsGraph {
 
     // Center the words using full screen width
     const screenWidth = window.innerWidth;
-    const totalGraphWidth = x + padding * 2; // Account for padding on both sides
-    this.wordsHolder.st({ left: (screenWidth - totalGraphWidth) / 2 });
+    const actualGraphWidth = x - wordSpacing; // Remove trailing space 
+    const centerOffset = (screenWidth - actualGraphWidth) / 2;
+    this.wordsHolder.st({ left: Math.max(50, centerOffset) + 'px' });
 
     this.makeAdjMat(words);
   }
@@ -185,7 +186,8 @@ export class TextAsGraph {
     // Center adj matrix using full screen width
     const screenWidth = window.innerWidth;
     const matrixWidth = w * words.length;
-    this.adjMatSel.st({ left: (screenWidth - matrixWidth) / 2 });
+    const matrixLeftOffset = Math.max(0, (screenWidth - matrixWidth) / 2);
+    this.adjMatSel.st({ left: matrixLeftOffset + 'px' });
 
     // Add top words (rotated)
     this.adjMatSel.selectAll('text.top')
