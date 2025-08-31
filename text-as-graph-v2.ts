@@ -49,7 +49,7 @@ export class TextAsGraph {
         zIndex: 10,
         color: 'transparent'  // Hide the input text
       })
-      .at({ maxlength: 30 })
+      .at({ maxlength: 100 })
       .on('input', () => this.render())
       .on('mousemove', function () {
         const x = d3.mouse(this)[0];
@@ -87,7 +87,7 @@ export class TextAsGraph {
     this.render();
   }
 
-  private render() {
+  public render() {
     // Clear previous elements
     this.rectSel.selectAll('*').remove();
     this.wordSel.selectAll('*').remove();
