@@ -55,10 +55,10 @@ multi-worker-*.js
 *-report-*.json
 check-*.js
 quick-*.js
-gat-attention-ascii-demo.txt
 
 # Development and experimental files
-d3-conventions*.js
+d3-conventions-*.js
+!d3-conventions.js
 *-validation*.js
 *-test*.js
 *-analysis*.js
@@ -81,6 +81,10 @@ gat-simple.html
 gat-explorer.html
 gat-explorer.css
 gat-explorer.js
+
+# Git filter-branch artifacts
+.git/refs/original/
+.git-rewrite/
 
 # OS files
 Thumbs.db
