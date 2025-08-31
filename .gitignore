@@ -45,6 +45,9 @@ screenshots/*.png
 # Debug and verification scripts
 debug-*.js
 verify-*.js
+test-*.js
+multi-worker-*.js
+*-report-*.json
 
 # OS files
 Thumbs.db
