@@ -34,8 +34,10 @@ lerna-debug.log*
 # Testing
 coverage/
 .nyc_output/
+test/
 screenshots/*.png
 !screenshots/.gitkeep
+!screenshots/gat-test-worker-2-1756616821922.png
 
 # Temporary files
 *.tmp
