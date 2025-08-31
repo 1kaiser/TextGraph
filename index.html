@@ -17,8 +17,8 @@
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 </head>
 <body>
-    <div class="text-input-section" style="position: fixed; bottom: 20px; left: 20px; width: 350px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 15px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div class="drag-handle" style="position: absolute; top: -8px; right: -8px; width: 16px; height: 16px; background: #dc3545; border-radius: 50%; cursor: grab; z-index: 1001;"></div>
+    <div class="text-input-section" style="position: fixed; top: calc(100vh - 200px); left: 20px; width: 350px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 15px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: grab; transition: all 0.2s ease;">
+        <div class="drag-handle" style="position: absolute; top: -8px; right: -8px; width: 16px; height: 16px; background: #dc3545; border-radius: 50%; cursor: grab; z-index: 1001; transition: background 0.2s ease;"></div>
         
         <!-- Paragraph Input Section (Collapsible) -->
         <div class="paragraph-section" style="margin-bottom: 15px;">
@@ -37,11 +37,8 @@
         <!-- Query Sentence Section -->
         <div style="text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 500;">🎯 Query Sentence</div>
         <input type="text" id="manual-text-input" placeholder="Enter query sentence..." value="Graph attention mechanisms capture relationships" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+        <div style="text-align: center; margin-top: 8px;">
             <button id="update-graph" onclick="updateVisualization()" style="background: #4285f4; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔄 Compute GAT</button>
-            <div style="font-size: 11px; color: #666;">
-                <span id="char-count" style="color: rgb(108, 117, 125);">44</span> chars
-            </div>
         </div>
     </div>
         
@@ -50,7 +47,7 @@
     
     <script src="index.js"></script>
     <script>
-        // Make the input box draggable
+        // Make the input box draggable and hoverable
         let isDragging = false;
         let dragStartX = 0;
         let dragStartY = 0;
@@ -60,7 +57,31 @@
         const draggableBox = document.querySelector('.text-input-section');
         const dragHandle = document.querySelector('.drag-handle');
         
-        dragHandle.addEventListener('mousedown', (e) => {
+        // Add hover effects to the entire box
+        draggableBox.addEventListener('mouseenter', () => {
+            draggableBox.style.boxShadow = '0 8px 20px rgba(0,0,0,0.25)';
+            draggableBox.style.transform = 'translateY(-2px)';
+            dragHandle.style.background = '#ff4757';
+        });
+        
+        draggableBox.addEventListener('mouseleave', () => {
+            if (!isDragging) {
+                draggableBox.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                draggableBox.style.transform = 'translateY(0px)';
+                dragHandle.style.background = '#dc3545';
+            }
+        });
+        
+        // Make entire box draggable (not just the handle)
+        function startDrag(e) {
+            // Don't drag if clicking on input elements
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') {
+                console.log('🚫 Drag blocked: clicked on', e.target.tagName);
+                return;
+            }
+            
+            console.log('🎯 Starting drag from', e.target.className || e.target.tagName);
+            
             isDragging = true;
             dragStartX = e.clientX;
             dragStartY = e.clientY;
@@ -69,9 +90,17 @@
             initialLeft = rect.left;
             initialTop = rect.top;
             
-            dragHandle.style.cursor = 'grabbing';
+            console.log('📍 Starting drag from position:', initialLeft, initialTop);
+            
+            draggableBox.style.cursor = 'grabbing';
+            draggableBox.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
             e.preventDefault();
-        });
+            e.stopPropagation();
+        }
+        
+        // Add drag functionality to both handle and box
+        dragHandle.addEventListener('mousedown', startDrag);
+        draggableBox.addEventListener('mousedown', startDrag);
         
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
@@ -79,18 +108,24 @@
             const deltaX = e.clientX - dragStartX;
             const deltaY = e.clientY - dragStartY;
             
-            const newLeft = Math.max(0, Math.min(window.innerWidth - 300, initialLeft + deltaX));
-            const newTop = Math.max(0, Math.min(window.innerHeight - 150, initialTop + deltaY));
+            const newLeft = Math.max(0, Math.min(window.innerWidth - 350, initialLeft + deltaX));
+            const newTop = Math.max(0, Math.min(window.innerHeight - 200, initialTop + deltaY));
+            
+            console.log('🔄 Dragging to:', newLeft, newTop);
             
             draggableBox.style.left = newLeft + 'px';
             draggableBox.style.top = newTop + 'px';
+            draggableBox.style.bottom = 'auto';
             draggableBox.style.right = 'auto';
         });
         
         document.addEventListener('mouseup', () => {
             if (isDragging) {
                 isDragging = false;
-                dragHandle.style.cursor = 'grab';
+                draggableBox.style.cursor = 'grab';
+                // Reset hover effects when dragging ends
+                draggableBox.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                dragHandle.style.background = '#dc3545';
             }
             if (isGraphDragging) {
                 isGraphDragging = false;

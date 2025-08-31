@@ -27,28 +27,14 @@ function initialize() {
 
 function setupTextInput() {
   const textInput = document.getElementById('manual-text-input');
-  const charCount = document.getElementById('char-count');
   const updateButton = document.getElementById('update-graph');
   
-  if (!textInput || !charCount || !updateButton) {
+  if (!textInput || !updateButton) {
     console.warn('Text input interface elements not found');
     return;
   }
   
-  // Update character count in real-time
-  function updateCharCount() {
-    const count = textInput.value.length;
-    charCount.textContent = count;
-    
-    // No length limits - just show character count
-    charCount.style.color = '#6c757d';
-  }
-  
-  // Set initial character count
-  updateCharCount();
-  
   // Add event listeners
-  textInput.addEventListener('input', updateCharCount);
   textInput.addEventListener('keydown', function(e) {
     // Allow Enter key to trigger update
     if (e.key === 'Enter' && !e.shiftKey) {
