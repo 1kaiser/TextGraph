@@ -45,6 +45,14 @@ Complete GAT (Graph Attention Networks) visualization system with mathematical c
 
 ## 🎨 Visualization System
 
+### Original Matrix SVG Integration
+```javascript
+// Updates existing matrix SVG (not separate component)
+updateExistingMatrix(attentionMatrix, queryTokens, minAttention, maxAttention)
+├── updateOriginalMatrixWithAttention() // Modify existing rectangles
+└── addAttentionScoresToMatrix()        // Overlay attention scores
+```
+
 ### Graph Node Transparency
 ```javascript
 // Direct attention → opacity mapping
@@ -55,17 +63,18 @@ rectangleColor = '#fbbf24'       // Fixed yellow
 
 ### Adjacency Matrix Transparency
 ```javascript
-// Normalized transparency based on global min/max
+// Updates original matrix rectangles with attention-based transparency
 if (attention === 0) {
-  transparency = 0.1;           // Self-attention: mostly transparent
-  cellColor = '#e5e7eb';        // Gray
+  opacity = 0.1;               // Self-attention: 10% opacity
+  fillColor = '#f3f4f6';       // Light gray
 } else {
-  // Invert mapping: high attention = low transparency
+  // Map attention range to opacity: min→20%, max→100%
   normalizedValue = (attention - minAttention) / (maxAttention - minAttention);
-  transparency = 1.0 - normalizedValue;  // High attention = opaque
-  transparency = clamp(transparency, 0.1, 0.9);
-  cellColor = '#3b82f6';        // Blue
+  opacity = 0.2 + 0.8 * normalizedValue;  // 20% to 100% opacity
+  fillColor = '#3b82f6';       // Blue for connections
 }
+
+// Real example: attention=0.950 → opacity=99%, attention=0.003 → opacity=20%
 ```
 
 ### Matrix Score Display

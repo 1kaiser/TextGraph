@@ -253,8 +253,10 @@ function applySoftmaxNormalization(scores) {
     // Compute sum for normalization
     const sum = exp_scores.reduce((a, b) => a + b, 0);
     
-    // Normalize to probabilities
-    const normalizedRow = sum > 0 ? exp_scores.map(exp_score => exp_score / sum) : row;
+    // Normalize to probabilities and pre-round to 1 decimal place
+    const normalizedRow = sum > 0 ? 
+      exp_scores.map(exp_score => parseFloat((exp_score / sum).toFixed(1))) : 
+      row.map(val => parseFloat(val.toFixed(1)));
     
     normalized.push(normalizedRow);
   });
@@ -319,141 +321,299 @@ function applyAttentionColoring(attentionData, queryText) {
     }
   });
   
-  // Create or update adjacency matrix visualization
-  createAttentionMatrix(attentionMatrix, queryTokens, minAttention, maxAttention);
+  // Update the existing adjacency matrix with attention values
+  updateExistingMatrix(attentionMatrix, queryTokens, minAttention, maxAttention);
   
   // Add hover interactions
   setupAttentionHoverInteractions(attentionData);
 }
 
-// Create adjacency matrix with transparency-based visualization
-function createAttentionMatrix(attentionMatrix, queryTokens, minAttention, maxAttention) {
-  console.log('🧮 Creating adjacency matrix visualization...');
+// Update the existing adjacency matrix SVG with attention values
+function updateExistingMatrix(attentionMatrix, queryTokens, minAttention, maxAttention) {
+  console.log('🧮 Updating existing adjacency matrix with GAT attention...');
   
-  // Remove existing matrix
-  d3.select('#attention-matrix').remove();
+  // Find the existing matrix SVG (the one with rect elements and labels)
+  const matrixSvg = d3.select('#text-as-graph').selectAll('svg')
+    .filter(function() {
+      return d3.select(this).selectAll('rect').size() >= queryTokens.length * queryTokens.length;
+    });
   
-  // Create matrix container
-  const matrixContainer = d3.select('#text-as-graph')
-    .append('div')
-    .attr('id', 'attention-matrix')
-    .style('position', 'absolute')
-    .style('top', '300px')
-    .style('right', '50px')
-    .style('background', 'rgba(255,255,255,0.9)')
-    .style('border', '1px solid #ddd')
-    .style('border-radius', '8px')
-    .style('padding', '15px')
-    .style('box-shadow', '0 4px 12px rgba(0,0,0,0.15)');
+  if (!matrixSvg.empty()) {
+    console.log('📍 Found existing matrix SVG, applying GAT attention...');
+    updateOriginalMatrixWithAttention(matrixSvg, attentionMatrix, queryTokens, minAttention, maxAttention);
+  } else {
+    console.log('📍 Matrix SVG not found, checking all rects...');
+    // Fallback: update any rect elements that could be matrix cells
+    updateAnyMatrixRects(attentionMatrix, queryTokens, minAttention, maxAttention);
+  }
+}
+
+// Update the original matrix rectangles with attention-based transparency
+function updateOriginalMatrixWithAttention(svg, attentionMatrix, queryTokens, minAttention, maxAttention) {
+  console.log('🎯 Applying attention to original matrix rectangles...');
   
-  // Add title
-  matrixContainer.append('div')
-    .style('text-align', 'center')
-    .style('font-weight', 'bold')
-    .style('margin-bottom', '10px')
+  // Get all rect elements in the matrix SVG
+  const rects = svg.selectAll('rect');
+  console.log(`📊 Found ${rects.size()} rectangles to update`);
+  
+  rects.each(function(d, index) {
+    // Calculate row and column from rectangle position/index
+    const row = Math.floor(index / queryTokens.length);
+    const col = index % queryTokens.length;
+    
+    if (row < attentionMatrix.length && col < queryTokens.length) {
+      const attention = attentionMatrix[row][col];
+      
+      // Calculate opacity based on attention value
+      let opacity;
+      let fillColor;
+      
+      if (attention === 0) {
+        opacity = 0.1; // Self-attention: very transparent
+        fillColor = '#f3f4f6'; // Light gray
+      } else {
+        // Map attention to opacity: higher attention = more opaque
+        const range = maxAttention - minAttention;
+        if (range > 0) {
+          const normalizedValue = (attention - minAttention) / range;
+          opacity = 0.2 + 0.8 * normalizedValue; // 20% to 100% opacity
+        } else {
+          opacity = 0.6;
+        }
+        fillColor = '#3b82f6'; // Blue for connections
+      }
+      
+      // Update the rectangle
+      d3.select(this)
+        .style('fill', fillColor)
+        .style('opacity', opacity)
+        .attr('data-attention', attention.toFixed(1))
+        .attr('data-row', row)
+        .attr('data-col', col);
+      
+      console.log(`📦 Updated rect[${row},${col}] attention=${attention.toFixed(3)} opacity=${opacity.toFixed(2)}`);
+    }
+  });
+  
+  // Add attention scores as text overlays
+  addAttentionScoresToMatrix(svg, attentionMatrix, queryTokens, minAttention, maxAttention);
+}
+
+// Fallback: update any matrix rectangles found
+function updateAnyMatrixRects(attentionMatrix, queryTokens, minAttention, maxAttention) {
+  console.log('🔍 Searching for matrix rectangles to update...');
+  
+  // Find all rect elements that could be matrix cells
+  const allRects = d3.selectAll('#text-as-graph rect');
+  console.log(`📊 Found ${allRects.size()} total rectangles`);
+  
+  // Filter to likely matrix rectangles (smaller, grid-positioned)
+  const matrixRects = allRects.filter(function() {
+    const rect = d3.select(this);
+    const width = parseFloat(rect.attr('width'));
+    const height = parseFloat(rect.attr('height'));
+    
+    // Matrix cells are typically small squares
+    return width <= 30 && height <= 30 && Math.abs(width - height) <= 5;
+  });
+  
+  console.log(`🎯 Found ${matrixRects.size()} potential matrix rectangles`);
+  
+  if (matrixRects.size() >= queryTokens.length * queryTokens.length) {
+    matrixRects.each(function(d, index) {
+      const row = Math.floor(index / queryTokens.length);
+      const col = index % queryTokens.length;
+      
+      if (row < attentionMatrix.length && col < queryTokens.length) {
+        const attention = attentionMatrix[row][col];
+        
+        // Apply attention-based styling
+        let opacity = attention === 0 ? 0.1 : 0.2 + 0.8 * attention;
+        let fillColor = attention === 0 ? '#f3f4f6' : '#3b82f6';
+        
+        d3.select(this)
+          .style('fill', fillColor)
+          .style('opacity', opacity)
+          .attr('data-attention', attention.toFixed(1));
+      }
+    });
+  }
+}
+
+// Add attention scores as text overlays to existing matrix
+function addAttentionScoresToMatrix(svg, attentionMatrix, queryTokens, minAttention, maxAttention) {
+  console.log('🔢 Adding attention scores to matrix...');
+  
+  // Remove existing attention scores
+  svg.selectAll('.gat-attention-score').remove();
+  
+  // Get matrix rectangles
+  const rects = svg.selectAll('rect');
+  
+  rects.each(function(d, index) {
+    const rect = d3.select(this);
+    const row = Math.floor(index / queryTokens.length);
+    const col = index % queryTokens.length;
+    
+    if (row < attentionMatrix.length && col < queryTokens.length) {
+      const attention = attentionMatrix[row][col];
+      
+      // Get rectangle position
+      const x = parseFloat(rect.attr('x') || rect.attr('transform')?.match(/translate\((\d+)/)?.[1] || 0);
+      const y = parseFloat(rect.attr('y') || rect.attr('transform')?.match(/translate\(\d+,\s*(\d+)/)?.[1] || 0);
+      const width = parseFloat(rect.attr('width')) || 20;
+      const height = parseFloat(rect.attr('height')) || 20;
+      
+      // Add attention score text
+      svg.append('text')
+        .attr('class', 'gat-attention-score')
+        .attr('x', x + width/2)
+        .attr('y', y + height/2)
+        .attr('dy', '.35em')
+        .attr('text-anchor', 'middle')
+        .style('font-size', '10px')
+        .style('font-weight', 'bold')
+        .style('fill', attention > 0.5 ? 'white' : '#1f2937')
+        .style('pointer-events', 'none')
+        .text(attention.toFixed(1));
+    }
+  });
+}
+
+// Update matrix within the main SVG visualization
+function updateMatrixInMainSvg(svg, attentionMatrix, queryTokens, minAttention, maxAttention) {
+  console.log('🎯 Updating matrix in main SVG...');
+  
+  // Clear existing matrix elements
+  svg.selectAll('.adj-mat-square').remove();
+  svg.selectAll('.attention-score').remove();
+  svg.selectAll('.matrix-label').remove();
+  
+  const matrixSize = 39; // 30 * 1.3 = 39
+  const matrixStartX = 50;
+  const matrixStartY = 200;
+  
+  // Add matrix title
+  svg.append('text')
+    .attr('class', 'matrix-label')
+    .attr('x', matrixStartX + (queryTokens.length * matrixSize) / 2)
+    .attr('y', matrixStartY - 20)
+    .attr('text-anchor', 'middle')
     .style('font-size', '14px')
+    .style('font-weight', 'bold')
+    .style('fill', '#374151')
     .text('🧮 Attention Matrix');
   
-  // Create SVG for matrix
-  const matrixSize = 25;
-  const matrixSvg = matrixContainer.append('svg')
-    .attr('width', queryTokens.length * matrixSize + 100)
-    .attr('height', queryTokens.length * matrixSize + 100);
-  
-  // Add row labels
-  matrixSvg.selectAll('.row-label')
-    .data(queryTokens)
-    .enter()
-    .append('text')
-    .attr('class', 'row-label')
-    .attr('x', 60)
-    .attr('y', (d, i) => 85 + i * matrixSize + matrixSize/2)
-    .attr('text-anchor', 'end')
-    .style('font-size', '10px')
-    .style('fill', '#666')
-    .text(d => d.substring(0, 8));
-  
-  // Add column labels
-  matrixSvg.selectAll('.col-label')
-    .data(queryTokens)
-    .enter()
-    .append('text')
-    .attr('class', 'col-label')
-    .attr('x', (d, i) => 70 + i * matrixSize + matrixSize/2)
-    .attr('y', 75)
-    .attr('text-anchor', 'middle')
-    .style('font-size', '10px')
-    .style('fill', '#666')
-    .style('transform', 'rotate(-45deg)')
-    .style('transform-origin', (d, i) => `${70 + i * matrixSize + matrixSize/2}px 75px`)
-    .text(d => d.substring(0, 8));
-  
-  // Create matrix cells with transparency based on normalized attention
+  // Create matrix cells with GAT attention values
   attentionMatrix.forEach((row, i) => {
     row.forEach((attention, j) => {
       // Calculate transparency based on full matrix min/max normalization
-      let transparency;
+      let opacity;
       let cellColor;
       
       if (attention === 0) {
-        // Self-attention: fully transparent with gray color
-        transparency = 0.1;
+        opacity = 0.1; // Self-attention: mostly transparent
         cellColor = '#e5e7eb';
       } else {
-        // Map attention range to transparency: min→100% transparent, max→0% transparent
+        // Map attention range to opacity: min→10%, max→90%
         const range = maxAttention - minAttention;
         if (range > 0) {
-          // Invert: high attention = low transparency (more opaque)
           const normalizedValue = (attention - minAttention) / range;
-          transparency = 1.0 - normalizedValue; // Invert: 1→0, 0→1
-          transparency = Math.max(0.1, Math.min(0.9, transparency)); // Clamp to 10%-90%
+          opacity = 0.1 + 0.8 * normalizedValue; // 10% to 90% opacity
         } else {
-          transparency = 0.5;
+          opacity = 0.5;
         }
         cellColor = '#3b82f6'; // Blue for attention connections
       }
       
-      // Create matrix cell with calculated transparency
-      const cell = matrixSvg.append('rect')
+      // Create matrix cell
+      svg.append('rect')
         .attr('class', 'adj-mat-square')
-        .attr('x', 70 + j * matrixSize)
-        .attr('y', 80 + i * matrixSize)
-        .attr('width', matrixSize - 1)
-        .attr('height', matrixSize - 1)
+        .attr('x', matrixStartX + j * matrixSize)
+        .attr('y', matrixStartY + i * matrixSize)
+        .attr('width', matrixSize - 2)
+        .attr('height', matrixSize - 2)
         .style('fill', cellColor)
-        .style('opacity', 1 - transparency) // Convert transparency to opacity
+        .style('opacity', opacity)
         .style('stroke', '#1f2937')
-        .style('stroke-width', 0.5)
+        .style('stroke-width', 1)
         .style('cursor', 'pointer')
         .attr('data-row', i)
         .attr('data-col', j)
-        .attr('data-attention', attention)
-        .attr('data-transparency', transparency);
+        .attr('data-attention', attention);
       
-      // Add attention value text with high contrast
-      matrixSvg.append('text')
+      // Add attention value text
+      svg.append('text')
         .attr('class', 'attention-score')
-        .attr('x', 70 + j * matrixSize + matrixSize/2)
-        .attr('y', 80 + i * matrixSize + matrixSize/2)
+        .attr('x', matrixStartX + j * matrixSize + matrixSize/2)
+        .attr('y', matrixStartY + i * matrixSize + matrixSize/2)
         .attr('dy', '.35em')
         .attr('text-anchor', 'middle')
-        .style('font-size', '9px')
+        .style('font-size', '10px')
         .style('font-weight', 'bold')
-        .style('fill', transparency < 0.5 ? 'white' : '#1f2937') // White on dark, dark on light
+        .style('fill', opacity > 0.5 ? 'white' : '#1f2937')
         .style('pointer-events', 'none')
-        .style('text-shadow', transparency < 0.5 ? '0 0 2px #000' : '0 0 2px #fff')
-        .text(attention.toFixed(3));
+        .text(attention.toFixed(1));
     });
   });
   
-  // Add legend
-  const legend = matrixContainer.append('div')
-    .style('margin-top', '10px')
-    .style('font-size', '10px')
-    .style('color', '#666');
+  // Add row and column labels
+  queryTokens.forEach((token, i) => {
+    // Row labels (left side)
+    svg.append('text')
+      .attr('class', 'matrix-label')
+      .attr('x', matrixStartX - 5)
+      .attr('y', matrixStartY + i * matrixSize + matrixSize/2)
+      .attr('dy', '.35em')
+      .attr('text-anchor', 'end')
+      .style('font-size', '10px')
+      .style('fill', '#666')
+      .text(token.substring(0, 6));
+    
+    // Column labels (top)
+    svg.append('text')
+      .attr('class', 'matrix-label')
+      .attr('x', matrixStartX + i * matrixSize + matrixSize/2)
+      .attr('y', matrixStartY - 5)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '10px')
+      .style('fill', '#666')
+      .text(token.substring(0, 6));
+  });
+}
+
+// Update existing matrix SVG (fallback)
+function updateMatrixSvg(svg, attentionMatrix, queryTokens, minAttention, maxAttention) {
+  console.log('🔄 Updating existing matrix SVG...');
   
-  legend.append('div').text(`📊 Range: ${minAttention.toFixed(3)} - ${maxAttention.toFixed(3)}`);
-  legend.append('div').text('💫 Opacity: Low→High attention');
+  // Update existing squares with new attention values
+  svg.selectAll('.adj-mat-square').each(function(d, i) {
+    const row = Math.floor(i / queryTokens.length);
+    const col = i % queryTokens.length;
+    
+    if (row < attentionMatrix.length && col < queryTokens.length) {
+      const attention = attentionMatrix[row][col];
+      
+      // Calculate opacity
+      let opacity;
+      let cellColor;
+      
+      if (attention === 0) {
+        opacity = 0.1;
+        cellColor = '#e5e7eb';
+      } else {
+        const range = maxAttention - minAttention;
+        const normalizedValue = range > 0 ? (attention - minAttention) / range : 0.5;
+        opacity = 0.1 + 0.8 * normalizedValue;
+        cellColor = '#3b82f6';
+      }
+      
+      d3.select(this)
+        .style('fill', cellColor)
+        .style('opacity', opacity)
+        .attr('data-attention', attention);
+    }
+  });
 }
 
 // Map attention values to colors

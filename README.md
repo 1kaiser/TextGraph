@@ -45,7 +45,7 @@ Access: http://localhost:42040
 ```javascript
 {
   queryTokens: ["graph", "attention", "mechanisms"],
-  attentionMatrix: [[0, 0.45, 0.32], [0.58, 0, 0.67], [0.42, 0.33, 0]],
+  attentionMatrix: [[0.003, 0.047, 0.950], [0.531, 0.031, 0.439], [0.958, 0.039, 0.003]],
   minAttention: 0.0027,
   maxAttention: 0.9580,
   computationDetails: {embeddings: 3, matrixSize: "3x3", nonZeroElements: 6}
@@ -54,15 +54,17 @@ Access: http://localhost:42040
 
 ### Mathematical Pipeline
 
-1. **`createEmbeddingMatrix()`** - Generate 64-dimensional token embeddings
-2. **`createAttentionScoreMatrix()`** - Compute dot products + LeakyReLU
-3. **`applySoftmaxNormalization()`** - Convert to probability distributions
+1. **`createEmbeddingMatrix()`** - Generate 64-dimensional deterministic embeddings
+2. **`createAttentionScoreMatrix()`** - Compute dot products + LeakyReLU activation  
+3. **`applySoftmaxNormalization()`** - Row-wise probability normalization
 
 ### Visualization Pipeline
 
 1. **`applyAttentionColoring()`** - Apply transparency to graph nodes
-2. **`createAttentionMatrix()`** - Render adjacency matrix with values
-3. **`setupAttentionHoverInteractions()`** - Enable graph↔matrix highlighting
+2. **`updateExistingMatrix()`** - Update original adjacency matrix SVG
+3. **`updateOriginalMatrixWithAttention()`** - Apply attention to existing rectangles
+4. **`addAttentionScoresToMatrix()`** - Overlay numerical attention scores
+5. **`setupAttentionHoverInteractions()`** - Enable graph↔matrix highlighting
 
 ## 🎨 Transparency Mapping
 
