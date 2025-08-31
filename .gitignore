@@ -42,8 +42,10 @@ screenshots/*.png
 *.temp
 .tmp/
 
-# ZIP files
+# ZIP files and portable packages
 *.zip
+*-portable/
+textgraph-portable*
 
 # Debug and verification scripts
 debug-*.js

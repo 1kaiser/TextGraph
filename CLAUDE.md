@@ -197,6 +197,43 @@ Multi-worker testing validates:
 4. **Real-time Computation**: Instant attention weight calculation
 5. **Interactive Validation**: Hover system for attention exploration
 
+## 📦 Deployment & Distribution
+
+### Portable Package Creation
+The system supports creating lightweight, self-contained deployment packages:
+
+```bash
+npm run build                     # Build optimized version
+# Create portable directory with dist files
+# Package includes: index.html, bundled JS, CSS files
+# Total size: ~121KB compressed, ~493KB uncompressed
+```
+
+### Package Contents
+- **index.html** (5.5KB) - Complete application interface
+- **TextGraph.[hash].js** (485KB) - Bundled application logic  
+- **style.[hash].css** (619B) - Base styling
+- **text-as-graph.[hash].css** (1.5KB) - Graph visualization styles
+
+### Dependencies Strategy
+**Hybrid CDN Approach**:
+- **Local**: Core application logic bundled and minified
+- **CDN**: External dependencies (D3.js ~280KB, MathJax ~500KB)
+- **Benefits**: Small package size, reliable CDN delivery, browser caching
+- **Requirements**: Internet connection for first run only
+
+### User Deployment
+```bash
+# User workflow
+unzip textgraph-portable.zip
+cd textgraph-portable  
+python3 -m http.server 8080    # Or any HTTP server
+# Open http://localhost:8080
+```
+
+**First Run**: Browser downloads CDN dependencies (~780KB, cached)  
+**Subsequent Runs**: Fully offline functional from cache
+
 ---
 
-*This implementation provides a complete educational tool for understanding Graph Attention Networks through interactive visualization of attention weights, mathematical computation transparency, and real-time exploration of attention patterns.*
+*This implementation provides a complete educational tool for understanding Graph Attention Networks through interactive visualization of attention weights, mathematical computation transparency, real-time exploration of attention patterns, and easy deployment distribution.*

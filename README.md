@@ -106,10 +106,36 @@ Range: [0.0027, 0.9580]
 Result: Transparency-mapped visualization
 ```
 
+## 📦 Deployment Options
+
+### Development Server
+```bash
+npm run dev        # Standard development server (localhost:1234)
+npm run dev:gat    # GAT explorer server (host 0.0.0.0:42040)
+```
+
+### Production Build
+```bash
+npm run build      # Creates optimized dist/ folder
+npm run build:gat  # Builds GAT explorer version
+```
+
+### Portable Distribution
+The build system creates a portable package (~121KB compressed) that includes:
+- Complete application bundled with dependencies
+- Self-contained HTML, CSS, and JavaScript
+- Automatic CDN dependency loading (D3.js, MathJax)
+- No installation required - just serve and run
+
+Users only need:
+- Modern web browser
+- HTTP server (Python, Node.js, or any static server)
+- Internet connection for first-time CDN downloads
+
 ## 🔧 Technical Stack
 
 - **MathJax**: Mathematical attention computation
 - **D3.js**: SVG-based matrix and graph rendering  
 - **JavaScript ES6**: Module-based architecture
-- **Vite**: Development server with hot reload
+- **Parcel**: Build system and development server
 - **Playwright**: Multi-worker testing and validation
