@@ -11,7 +11,7 @@ const pixelmatch = require('pixelmatch');
 const { PNG } = require('pngjs');
 
 const ORIGINAL_URL = 'http://localhost:1234';  // Distill original
-const OUR_URL = 'http://localhost:43033';      // Our implementation
+const OUR_URL = 'http://localhost:35417';      // Our implementation
 
 async function compareImplementations() {
   console.log('🔍 Starting visual comparison test...\n');

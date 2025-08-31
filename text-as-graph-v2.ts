@@ -7,7 +7,6 @@ import * as d3 from 'd3';
 const padding = 30;
 const wordSpacing = 30;
 const fontSize = 30;
-const charWidth = calcCharWidth();
 const steelblue = d3.color('steelblue');
 const blue = steelblue.darker(-.5);
 const blueDark = steelblue.darker(2);
@@ -21,8 +20,12 @@ export class TextAsGraph {
   private wordsHolder = this.sel.append('div');
   private coords = [null, null];
   private adjMatSel;
+  private charWidth;
 
   constructor() {
+    // Use the effective character width that matches original rectangles
+    this.charWidth = 15; // Matches the implied character width from original rectangles
+    
     // Make the z index lower to make overflow go behind words.
     this.sel.parent().style('z-index', '-1');
     const c = d3.conventions({ 
@@ -54,7 +57,7 @@ export class TextAsGraph {
         let wordIdx = 0;
         for (let l of [...this.value]) {
           const isSpace = l == ' ';
-          offset += isSpace ? charWidth + wordSpacing : charWidth;
+          offset += isSpace ? that.charWidth + wordSpacing : that.charWidth;
           wordIdx += isSpace ? 1 : 0;
           if (offset > x) {
             that.hover(wordIdx, isSpace ? wordIdx - 1 : wordIdx);
@@ -94,12 +97,12 @@ export class TextAsGraph {
     
     let x = 0;
     const pad = 5;
-    const spaceWidth = charWidth + wordSpacing;
+    const spaceWidth = this.charWidth + wordSpacing;
     const height = 100;
 
     // Draw rectangles and word labels
     words.forEach((d, i) => {
-      const width = d.word.length * charWidth;
+      const width = d.word.length * this.charWidth;
 
       // Add rectangle
       this.rectSel.append('rect')
@@ -259,7 +262,12 @@ export class TextAsGraph {
 
 function calcCharWidth() {
   const spanSel = d3.select('body').append('span').text('x')
-    .st({ fontFamily: 'monospace', fontSize });
+    .st({ 
+      fontFamily: 'monospace', 
+      fontSize: fontSize + 'px',  // Use px unit for correct measurement
+      position: 'absolute',
+      visibility: 'hidden'
+    });
   const w = spanSel.node().offsetWidth;
   spanSel.remove();
   return w;
