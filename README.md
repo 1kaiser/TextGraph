@@ -2,9 +2,9 @@
 
 Interactive text-to-graph visualization with Graph Attention Networks (GAT) computation and transparency-based attention mapping.
 
-![TextGraph GAT Visualization](screenshots/gat-simple-complete.png)
+![TextGraph GAT Visualization](screenshots/gat-test-worker-2-1756616821922.png)
 
-> **Graph Attention Networks in action**: The visualization shows attention weights through node transparency and adjacency matrix colors, demonstrating how different words in a query attend to each other with mathematically computed attention scores.
+> **Graph Attention Networks in action**: Interactive visualization showing "Attention mechanisms allow models" with computed attention weights displayed in the adjacency matrix (0.0-0.9 range) and corresponding node transparency. The dual-input system allows context paragraph analysis with targeted query sentences.
 
 ## 🎯 Overview
 
