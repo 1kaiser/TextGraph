@@ -141,3 +141,31 @@ Users only need:
 - **JavaScript ES6**: Module-based architecture
 - **Parcel**: Build system and development server
 - **Playwright**: Multi-worker testing and validation
+
+## 📚 References & Inspiration
+
+This implementation draws from foundational work in Graph Neural Networks and interactive educational visualizations:
+
+### Graph Neural Networks Theory
+- **Sanchez-Lengeling, B., Reif, E., Pearce, A., & Wiltschko, A. B.** (2021). *A Gentle Introduction to Graph Neural Networks*. Distill. https://doi.org/10.23915/distill.00033
+
+Key concepts implemented:
+- **Text-as-Graph Representation**: "Texts can be viewed as directed graphs where each character or index is a node and is connected via an edge to the node that follows it" [[1]](#references)
+- **Graph Attention Networks (GAT)**: Enables "nodes to attend over their neighborhoods' features" and "specifying different weights to different nodes in a neighborhood" [[1]](#references)
+- **Message Passing**: Core GNN mechanism for information exchange between graph components [[1]](#references)
+
+### Interactive Visualization
+- **Distill GNN Interactive Visualizations**: https://github.com/distillpub/post--gnn-intro  
+  - Educational framework for graph neural network concepts
+  - Interactive web-based demonstrations
+  - Open-source implementation patterns (Apache-2.0 License)
+
+### Implementation Philosophy
+This project extends the educational approach of Distill publications by providing:
+1. **Hands-on GAT Computation**: Real mathematical attention weight calculation
+2. **Interactive Exploration**: Bidirectional graph ↔ matrix highlighting 
+3. **Transparency Mapping**: Visual encoding of attention strength through opacity
+4. **Educational Accessibility**: Complete local execution with portable deployment
+
+### References
+[1] Sanchez-Lengeling, B., Reif, E., Pearce, A., & Wiltschko, A. B. (2021). A Gentle Introduction to Graph Neural Networks. *Distill*. https://doi.org/10.23915/distill.00033
