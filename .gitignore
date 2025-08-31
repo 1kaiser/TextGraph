@@ -47,7 +47,7 @@ screenshots/*.png
 *-portable/
 textgraph-portable*
 
-# Debug and verification scripts
+# Debug and verification scripts  
 debug-*.js
 verify-*.js
 test-*.js
@@ -56,6 +56,31 @@ multi-worker-*.js
 check-*.js
 quick-*.js
 gat-attention-ascii-demo.txt
+
+# Development and experimental files
+d3-conventions*.js
+*-validation*.js
+*-test*.js
+*-analysis*.js
+*-overflow*.js
+visual-*.js
+word-boundary*.js
+*-boundary*.js
+*-width*.js
+*-centering*.js
+*-rendering*.js
+*-update*.js
+*-mathjax*.js
+*-rectangle*.js
+*-dragging*.js
+*-interfaces*.js
+*-buffering*.js
+*-fixed*.js
+*-gat*.js
+gat-simple.html
+gat-explorer.html
+gat-explorer.css
+gat-explorer.js
 
 # OS files
 Thumbs.db
