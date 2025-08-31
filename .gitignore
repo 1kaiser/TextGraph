@@ -42,6 +42,10 @@ screenshots/*.png
 *.temp
 .tmp/
 
+# Debug and verification scripts
+debug-*.js
+verify-*.js
+
 # OS files
 Thumbs.db
 Desktop.ini
