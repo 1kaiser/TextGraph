@@ -38,17 +38,10 @@ function setupTextInput() {
   // Update character count in real-time
   function updateCharCount() {
     const count = textInput.value.length;
-    const maxLength = textInput.getAttribute('maxlength') || 100;
     charCount.textContent = count;
     
-    // Change color when approaching limit
-    if (count > maxLength * 0.9) {
-      charCount.style.color = '#dc3545';
-    } else if (count > maxLength * 0.75) {
-      charCount.style.color = '#fd7e14';
-    } else {
-      charCount.style.color = '#6c757d';
-    }
+    // No length limits - just show character count
+    charCount.style.color = '#6c757d';
   }
   
   // Set initial character count

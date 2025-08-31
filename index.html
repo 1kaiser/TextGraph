@@ -27,20 +27,20 @@
                 <button id="toggle-paragraph" onclick="toggleParagraph()" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666;">▼</button>
             </div>
             <div id="paragraph-container" style="display: none;">
-                <textarea id="paragraph-input" placeholder="Enter full paragraph for attention context..." maxlength="500" style="width: 100%; height: 80px; padding: 8px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: monospace;">Neural networks are powerful machine learning models. Graph attention mechanisms capture complex relationships between words. These models can transform how we process natural language understanding.</textarea>
+                <textarea id="paragraph-input" placeholder="Enter full paragraph for attention context..." maxlength="10000" style="width: 100%; height: 80px; padding: 8px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: monospace;">Neural networks are powerful machine learning models. Graph attention mechanisms capture complex relationships between words. These models can transform how we process natural language understanding.</textarea>
                 <div style="font-size: 10px; color: #888; text-align: right; margin-top: 2px;">
-                    <span id="para-char-count">179</span>/500 chars
+                    <span id="para-char-count">179</span>/10000 chars
                 </div>
             </div>
         </div>
         
         <!-- Query Sentence Section -->
         <div style="text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 500;">🎯 Query Sentence</div>
-        <input type="text" id="manual-text-input" placeholder="Enter query sentence..." maxlength="100" value="Graph attention mechanisms capture relationships" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+        <input type="text" id="manual-text-input" placeholder="Enter query sentence..." value="Graph attention mechanisms capture relationships" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
             <button id="update-graph" onclick="updateVisualization()" style="background: #4285f4; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔄 Compute GAT</button>
             <div style="font-size: 11px; color: #666;">
-                <span id="char-count" style="color: rgb(108, 117, 125);">44</span>/100
+                <span id="char-count" style="color: rgb(108, 117, 125);">44</span> chars
             </div>
         </div>
     </div>

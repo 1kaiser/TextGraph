@@ -78,10 +78,11 @@ if (attention === 0) {
 ```
 
 ### Matrix Score Display
-- **Font size**: 9px, bold
+- **Font size**: 10px, bold
 - **Text color**: White on dark cells, dark on light cells  
-- **Format**: 3 decimal places (0.xxx)
-- **Text shadow**: High contrast outline
+- **Format**: 1 decimal place (0.x) - pre-computed in MathJax
+- **Matrix size**: 1.3x larger squares (26px base, 39px GAT)
+- **Positioning**: Bottom-left input box, centered wrapped graph
 
 ## 🎯 Interactive System
 
@@ -156,6 +157,7 @@ TextGraph/
 - **Matrix complexity**: O(n²) where n = query token count
 - **Rendering performance**: ~100ms for 5-word queries
 - **Memory usage**: Minimal (embeddings computed on-demand)
+- **Network access**: http://10.36.4.200:32903 for local network sharing
 
 ## 🎪 Usage Examples
 

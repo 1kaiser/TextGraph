@@ -75,7 +75,9 @@ Access: http://localhost:42040
 ### Adjacency Matrix  
 - **Transparency normalized** by min/max across full matrix
 - **High attention** = low transparency (more opaque)
-- **Attention values** displayed as text overlays (0.xxx format)
+- **Attention values** displayed as text overlays (0.x format)
+- **Matrix squares**: 1.3x larger for better readability
+- **Arrow routing**: Straight arrows for clean connections
 - **Color coding**: Blue for connections, gray for self-attention
 
 ## 🎯 Hover Interactions
