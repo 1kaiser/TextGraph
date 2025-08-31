@@ -2,7 +2,8 @@
 #text-as-graph {
     position: relative;
     width: 100%;
-    min-height: 300px;
+    min-height: 400px;
+    margin: 20px 0;
 }
 
 #text-as-graph input {
@@ -11,8 +12,8 @@
     background-color: transparent;
     border: none;
     outline: none;
-    width: 900px;
-    max-width: 100%;
+    width: 100%;
+    max-width: none;
 }
 
 #text-as-graph rect {

@@ -32,11 +32,12 @@ export class TextAsGraph {
       sel: this.wordsHolder, 
       margin: { left: 0 }, 
       layers: 'sd', 
-      height: 250 
+      height: 400,
+      width: window.innerWidth - 40
     });
     const [svgSel, divSel] = c.layers;
 
-    divSel.st({ left: padding, top: 20 + padding, height: 30 });
+    divSel.st({ left: 0, top: 20 + padding, height: 30 });
     const that = this;
     const inputSel = divSel.append('input')
       .st({ 
@@ -82,7 +83,7 @@ export class TextAsGraph {
     this.arrowSel = arrowGroup;
 
     this.adjMatSel = this.sel.append('svg')
-      .st({ position: 'absolute', top: 150, left: 50, overflow: 'visible' });
+      .st({ position: 'absolute', top: 200, left: 50, overflow: 'visible' });
 
     this.render();
   }
@@ -148,9 +149,10 @@ export class TextAsGraph {
       }
     });
 
-    // Center the words
-    const totalWidth = this.wordsHolder.node().getBoundingClientRect().width;
-    this.wordsHolder.st({ left: (totalWidth - x) / 2 });
+    // Center the words using full screen width
+    const screenWidth = window.innerWidth;
+    const totalGraphWidth = x + padding * 2; // Account for padding on both sides
+    this.wordsHolder.st({ left: (screenWidth - totalGraphWidth) / 2 });
 
     this.makeAdjMat(words);
   }
@@ -180,9 +182,10 @@ export class TextAsGraph {
       .on('mouseover', d => this.hover(d[0].i, d[1].i))
       .on('mouseout', d => this.hover());
 
-    // Center adj matrix
-    const width = this.wordsHolder.node().getBoundingClientRect().width;
-    this.adjMatSel.st({ left: (width - w * words.length) / 2 });
+    // Center adj matrix using full screen width
+    const screenWidth = window.innerWidth;
+    const matrixWidth = w * words.length;
+    this.adjMatSel.st({ left: (screenWidth - matrixWidth) / 2 });
 
     // Add top words (rotated)
     this.adjMatSel.selectAll('text.top')

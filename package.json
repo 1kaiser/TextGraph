@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "parcel index.html --no-hmr",
+    "dev:gat": "parcel gat-simple.html --no-hmr --host 0.0.0.0 --port 42040",
     "build": "parcel build index.html --public-url ./",
+    "build:gat": "parcel build gat-explorer.html --public-url ./",
     "test": "node test/visual-comparison.js",
     "test:parallel": "node test/parallel-visual-test.js"
   },
