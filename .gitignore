@@ -42,6 +42,9 @@ screenshots/*.png
 *.temp
 .tmp/
 
+# ZIP files
+*.zip
+
 # Debug and verification scripts
 debug-*.js
 verify-*.js

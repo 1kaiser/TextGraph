@@ -2,28 +2,6 @@
 
 Complete GAT (Graph Attention Networks) visualization system with mathematical computation and interactive transparency-based attention mapping.
 
-## 🚀 Quick Start (Updated Aug 31, 2025)
-
-**One-Line Server Start:**
-```bash
-./start-server.sh          # Main TextGraph: http://localhost:3000 + http://10.22.0.199:3000
-./start-gat-server.sh      # GAT Attention: http://localhost:42040 + http://10.22.0.199:42040
-```
-
-**NPM Commands:**
-```bash
-npm run start              # Main app with local network access
-npm run start:gat          # GAT visualization with local network access
-```
-
-## 📦 Project Status (Aug 31, 2025)
-- ✅ **Repository Initialized**: Git tracking with proper .gitignore
-- ✅ **Network Access**: Localhost + local IP server access (10.22.0.199)  
-- ✅ **Documentation**: Complete README with screenshots and references
-- ✅ **Server Scripts**: One-line executable startup scripts
-- ✅ **Clean Codebase**: Debug/test files properly ignored
-- ✅ **User Configuration**: 1kaiser GitHub credentials properly configured
-
 ## 🎯 System Architecture
 
 ```
