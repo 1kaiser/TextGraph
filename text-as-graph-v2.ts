@@ -96,20 +96,49 @@ export class TextAsGraph {
 
     const words = this.inputNode.value.split(' ').map((word, i) => ({ word, i }));
     
-    let x = 0;
     const pad = 5;
     const spaceWidth = this.charWidth + wordSpacing;
     const height = 100;
+    const maxWidth = window.innerWidth - 100; // Leave margin for wrapping
+    const lineHeight = 120; // Space between lines
+    
+    // Calculate word positions with wrapping
+    const wordPositions = [];
+    let currentX = 0;
+    let currentY = 0;
+    let currentLine = 0;
 
-    // Draw rectangles and word labels
     words.forEach((d, i) => {
       const width = d.word.length * this.charWidth;
+      const wordWidth = width + pad * 2;
+      
+      // Check if word would overflow current line
+      if (currentX + wordWidth > maxWidth && currentX > 0) {
+        // Move to next line
+        currentLine++;
+        currentX = 0;
+        currentY = currentLine * lineHeight;
+      }
+      
+      // Store position for this word
+      wordPositions.push({
+        ...d,
+        x: currentX,
+        y: currentY,
+        width: width,
+        line: currentLine
+      });
+      
+      currentX += wordWidth + spaceWidth;
+    });
 
+    // Draw rectangles and word labels with wrapped positioning
+    wordPositions.forEach((d, i) => {
       // Add rectangle
       this.rectSel.append('rect')
-        .attr('x', x - pad + padding)
-        .attr('y', height / 4)
-        .attr('width', width + pad * 2)
+        .attr('x', d.x - pad + padding)
+        .attr('y', d.y + height / 4)
+        .attr('width', d.width + pad * 2)
         .attr('height', height / 2)
         .attr('rx', height / 6)
         .attr('ry', height / 6)
@@ -122,8 +151,8 @@ export class TextAsGraph {
 
       // Add word text
       this.wordSel.append('text')
-        .attr('x', x + width / 2 + padding)
-        .attr('y', height / 2)
+        .attr('x', d.x + d.width / 2 + padding)
+        .attr('y', d.y + height / 2)
         .attr('dy', '.33em')
         .attr('text-anchor', 'middle')
         .attr('fill', '#000')
@@ -131,34 +160,66 @@ export class TextAsGraph {
         .attr('font-size', fontSize)
         .attr('pointer-events', 'none')
         .text(d.word);
+    });
 
-      x += width + spaceWidth;
-
-      // Add arrow if not last word
-      if (i < words.length - 1) {
-        this.arrowSel.append('text')
-          .attr('x', x - spaceWidth / 2 + padding)
-          .attr('y', height / 2)
-          .attr('dy', '.33em')
-          .attr('text-anchor', 'middle')
-          .attr('fill', blue)
-          .attr('font-size', 30)
-          .attr('data-from', i)
-          .attr('data-to', i + 1)
-          .text('→');
+    // Draw arrows with line wrapping support
+    wordPositions.forEach((d, i) => {
+      if (i < wordPositions.length - 1) {
+        const nextWord = wordPositions[i + 1];
+        const fromX = d.x + d.width + pad + padding;
+        const fromY = d.y + height / 2;
+        const toX = nextWord.x - pad + padding;
+        const toY = nextWord.y + height / 2;
+        
+        // Check if arrow needs to wrap to next line
+        if (d.line === nextWord.line) {
+          // Same line: simple horizontal arrow
+          this.arrowSel.append('text')
+            .attr('x', (fromX + toX) / 2)
+            .attr('y', fromY)
+            .attr('dy', '.33em')
+            .attr('text-anchor', 'middle')
+            .attr('fill', blue)
+            .attr('font-size', 30)
+            .attr('data-from', i)
+            .attr('data-to', i + 1)
+            .text('→');
+        } else {
+          // Different lines: curved arrow path
+          const midX = fromX + 30;
+          const midY1 = fromY + 20;
+          const midY2 = toY - 20;
+          
+          // Create curved path for line wrapping
+          this.arrowSel.append('path')
+            .attr('d', `M ${fromX} ${fromY} Q ${midX} ${midY1} ${midX} ${(midY1 + midY2) / 2} Q ${midX} ${midY2} ${toX} ${toY}`)
+            .attr('stroke', blue)
+            .attr('stroke-width', 2)
+            .attr('fill', 'none')
+            .attr('marker-end', 'url(#arrowhead)')
+            .attr('data-from', i)
+            .attr('data-to', i + 1);
+          
+          // Add arrowhead marker if not exists
+          let defs = this.arrowSel.select('defs');
+          if (defs.empty()) {
+            defs = this.arrowSel.append('defs');
+            defs.append('marker')
+              .attr('id', 'arrowhead')
+              .attr('markerWidth', 10)
+              .attr('markerHeight', 7)
+              .attr('refX', 10)
+              .attr('refY', 3.5)
+              .attr('orient', 'auto')
+              .append('polygon')
+              .attr('points', '0 0, 10 3.5, 0 7')
+              .attr('fill', blue);
+          }
+        }
       }
     });
 
-    // Center the entire graph by translating the SVG groups
-    const screenWidth = window.innerWidth;
-    const actualGraphWidth = x - wordSpacing; // Remove trailing space
-    const centerOffset = (screenWidth - actualGraphWidth) / 2 - padding;
-    
-    // Apply translation to center all SVG elements
-    this.rectSel.attr('transform', `translate(${centerOffset}, 0)`);
-    this.wordSel.attr('transform', `translate(${centerOffset}, 0)`);
-    this.arrowSel.attr('transform', `translate(${centerOffset}, 0)`);
-
+    // No centering transform needed - words are positioned absolutely
     this.makeAdjMat(words);
   }
 
