@@ -8,6 +8,33 @@ import { TextAsGraph } from './text-as-graph-v2';
 // Global variables for the interface
 let textAsGraphInstance = null;
 
+// Make functions globally available for HTML onclick handlers
+window.toggleParagraph = function() {
+  const container = document.getElementById('paragraph-container');
+  const button = document.getElementById('toggle-paragraph');
+  if (container.style.display === 'none') {
+    container.style.display = 'block';
+    button.textContent = '▲';
+  } else {
+    container.style.display = 'none';
+    button.textContent = '▼';
+  }
+};
+
+window.updateVisualization = function() {
+  const textInput = document.getElementById('manual-text-input');
+  const paragraphInput = document.getElementById('paragraph-input');
+  
+  if (textInput && paragraphInput) {
+    const queryText = textInput.value.trim();
+    const paragraphText = paragraphInput.value.trim();
+    
+    // Compute and apply GAT attention
+    const attentionData = computeGATAttention(paragraphText, queryText);
+    applyAttentionColoring(attentionData, queryText);
+  }
+};
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initialize);
