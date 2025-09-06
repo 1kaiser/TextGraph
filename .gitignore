@@ -1,0 +1,99 @@
+# Dependencies
+node_modules/
+bower_components/
+
+# Build outputs
+dist/
+build/
+public/
+.cache/
+.parcel-cache/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+test/
+screenshots/*.png
+!screenshots/.gitkeep
+!screenshots/gat-test-worker-2-1756616821922.png
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# ZIP files and portable packages
+*.zip
+*-portable/
+textgraph-portable*
+
+# Debug and verification scripts  
+debug-*.js
+verify-*.js
+test-*.js
+multi-worker-*.js
+*-report-*.json
+check-*.js
+quick-*.js
+
+# Development and experimental files
+d3-conventions-*.js
+!d3-conventions.js
+*-validation*.js
+*-test*.js
+*-analysis*.js
+*-overflow*.js
+visual-*.js
+word-boundary*.js
+*-boundary*.js
+*-width*.js
+*-centering*.js
+*-rendering*.js
+*-update*.js
+*-mathjax*.js
+*-rectangle*.js
+*-dragging*.js
+*-interfaces*.js
+*-buffering*.js
+*-fixed*.js
+*-gat*.js
+gat-simple.html
+gat-explorer.html
+gat-explorer.css
+gat-explorer.js
+
+# TypeScript development versions
+text-as-graph.ts
+text-as-graph-exact.ts
+text-as-graph-fixed.ts
+!text-as-graph-v2.ts
+
+# Git filter-branch artifacts
+.git/refs/original/
+.git-rewrite/
+
+# OS files
+Thumbs.db
+Desktop.ini
