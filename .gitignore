@@ -58,6 +58,16 @@ multi-worker-*.js
 check-*.js
 quick-*.js
 
+# Demo creation scripts (keep one for reproducibility)
+create-demo-gif.js
+create-demo-screenshots.js
+!create-simple-demo.js
+
+# GIF files (keep optimized version only)
+textgraph-interactive-demo.gif
+*.gif
+!textgraph-demo-optimized.gif
+
 # Development and experimental files
 d3-conventions-*.js
 !d3-conventions.js
