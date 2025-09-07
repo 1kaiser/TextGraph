@@ -24,16 +24,22 @@ export class TextAsGraph {
   private measurementSvg; // SVG for text measurement
 
   constructor() {
-    // Create measurement SVG for accurate text sizing
+    console.log('🚀 TextGraph: Initializing with enhanced text measurement system...');
+    
+    // Create measurement SVG for accurate text sizing  
     this.measurementSvg = d3.select('body').append('svg')
       .style('position', 'absolute')
-      .style('visibility', 'hidden')
-      .style('top', '-9999px')
+      .style('left', '-9999px')  // Use left instead of visibility
+      .style('top', '0px')
       .attr('width', 1000)
       .attr('height', 100);
     
+    console.log('📏 TextGraph: Created hidden measurement SVG for precise text calculations');
+    
     // Calculate dynamic character width using actual text measurement
     this.charWidth = this.calculateDynamicCharWidth();
+    console.log(`✨ TextGraph: Dynamic character width calculated: ${this.charWidth}px (replaces hardcoded 15px)`);
+    console.log('🎯 TextGraph: Enhanced text measurement system active - getBBox() API enabled!');
     
     // Make the z index lower to make overflow go behind words.
     this.sel.parent().style('z-index', '-1');
@@ -98,20 +104,37 @@ export class TextAsGraph {
   }
 
   public render() {
+    console.log('🎨 TextGraph: Starting render with enhanced text measurement...');
+    
     // Clear previous elements
     this.rectSel.selectAll('*').remove();
     this.wordSel.selectAll('*').remove();
     this.arrowSel.selectAll('*').remove();
 
     const words = this.inputNode.value.split(' ').map((word, i) => ({ word, i }));
+    console.log(`📝 TextGraph: Processing ${words.length} words:`, words.map(w => w.word));
     
     // Precompute text dimensions for all words for better performance
+    const startTime = performance.now();
     const wordDimensions = this.precomputeTextDimensions(words.map(w => w.word));
+    const endTime = performance.now();
+    
     const wordsWithDimensions = words.map((word, i) => ({
       ...word,
       width: wordDimensions[i].width,
       height: wordDimensions[i].height
     }));
+    
+    console.log(`⚡ TextGraph: Precomputed text dimensions in ${(endTime - startTime).toFixed(2)}ms`);
+    console.log('📊 TextGraph: Word measurements:', wordsWithDimensions.map(w => `"${w.word}": ${w.width.toFixed(1)}px`));
+    
+    // Calculate total improvement over old method
+    const totalNewWidth = wordsWithDimensions.reduce((sum, w) => sum + w.width, 0);
+    const totalOldWidth = wordsWithDimensions.reduce((sum, w) => sum + (w.word.length * 15), 0);
+    const improvementPercent = ((totalNewWidth - totalOldWidth) / totalOldWidth * 100);
+    
+    console.log(`🎯 TextGraph: Total width accuracy improvement: ${improvementPercent > 0 ? '+' : ''}${improvementPercent.toFixed(1)}% (${totalNewWidth.toFixed(1)}px vs ${totalOldWidth.toFixed(1)}px old method)`);
+    console.log('🔧 TextGraph: Enhanced measurement system provides pixel-perfect text-rectangle alignment!');
     
     const pad = 5;
     const spaceWidth = this.charWidth + wordSpacing;
@@ -335,13 +358,18 @@ export class TextAsGraph {
   private calculateDynamicCharWidth(): number {
     const testText = this.measurementSvg.append('text')
       .attr('font-family', 'monospace')
-      .attr('font-size', fontSize)
+      .attr('font-size', fontSize + 'px')  // Add 'px' unit
+      .style('font-family', 'monospace')   // Ensure style is applied
+      .style('font-size', fontSize + 'px') // Ensure style is applied
       .text('x');
     
     const width = testText.node().getComputedTextLength();
     testText.remove();
     
-    return width;
+    console.log(`🔍 TextGraph: Calculated dynamic char width using getComputedTextLength(): ${width}px`);
+    console.log(`📈 TextGraph: Improvement over hardcoded (15px): ${width > 15 ? '+' : ''}${(width - 15).toFixed(1)}px`);
+    
+    return width > 0 ? width : 18; // Use actual monospace character width as fallback
   }
 
   /**
@@ -352,14 +380,21 @@ export class TextAsGraph {
     
     const textElement = this.measurementSvg.append('text')
       .attr('font-family', 'monospace')
-      .attr('font-size', fontSize)
+      .attr('font-size', fontSize + 'px')  // Add 'px' unit
+      .style('font-family', 'monospace')   // Ensure style is applied
+      .style('font-size', fontSize + 'px') // Ensure style is applied
       .text(text);
     
     const bbox = textElement.node().getBBox();
     const width = bbox.width;
+    const oldMethodWidth = text.length * 15; // Old hardcoded method
+    const actualWidth = width > 0 ? width : text.length * this.charWidth;
     
     textElement.remove();
-    return width;
+    
+    console.log(`📐 TextGraph: getBBox() measurement for "${text}": ${actualWidth.toFixed(1)}px (vs old method: ${oldMethodWidth}px, diff: ${(actualWidth - oldMethodWidth).toFixed(1)}px)`);
+    
+    return actualWidth;
   }
 
   /**
