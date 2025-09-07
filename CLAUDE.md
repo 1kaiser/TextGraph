@@ -1,22 +1,59 @@
 # TextGraph - Technical Implementation Guide
 
-Complete GAT (Graph Attention Networks) visualization system with mathematical computation and interactive transparency-based attention mapping.
+Complete GAT (Graph Attention Networks) visualization system with **dual implementation comparison**: Educational GAT vs Original GAT side-by-side with mathematical computation and interactive transparency-based attention mapping.
+
+## 🆕 **MAJOR UPDATE: Dual GAT Implementation (Sep 2025)**
+
+TextGraph now features **side-by-side comparison** of two GAT implementations:
+
+### 🎓 Educational GAT (Blue Matrix - Left)
+- **Purpose**: Learning and visualization  
+- **Self-attention**: Excluded (diagonal = 0)
+- **Formula**: Simple dot product Q·K
+- **Parameters**: Deterministic embeddings
+- **Complexity**: O(n²×d)
+
+### 🔬 Original GAT (Red Matrix - Right)
+- **Purpose**: Research accuracy (Veličković et al. 2017)
+- **Self-attention**: Included in computation
+- **Formula**: a^T[Wh_i || Wh_j] (concatenated features)
+- **Parameters**: Learnable W (64×32) + attention vector a (64D)
+- **Complexity**: O(n²×d²)
 
 ## 🎯 System Architecture
 
 ```
 ┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
-│   User Interface    │    │  GAT Computation    │    │   D3 Visualization  │
+│   User Interface    │    │   Dual GAT Engine   │    │   D3 Visualization  │
 │                     │    │                     │    │                     │
-│ • Paragraph Input   │───►│ • MathJax Compute   │───►│ • Transparency Map  │
-│ • Query Input       │    │ • Attention Matrix  │    │ • Interactive Hover │
-│ • Draggable UI      │    │ • Min/Max Range     │    │ • Score Overlays    │
+│ • Paragraph Input   │───►│ • Educational GAT   │───►│ • Blue Matrix       │
+│ • Query Input       │    │ • Original GAT      │    │ • Red Matrix        │
+│ • Draggable UI      │    │ • Parallel Compute  │    │ • Dual Hover        │
+│ • Compute Button    │    │ • Range Analysis    │    │ • Console Compare   │
 └─────────────────────┘    └─────────────────────┘    └─────────────────────┘
+                                      │
+                                      ▼
+                           ┌─────────────────────┐
+                           │  Comparison Legend  │
+                           │                     │
+                           │ • Key Differences   │
+                           │ • Algorithm Details │
+                           │ • Technical Specs   │
+                           └─────────────────────┘
 ```
 
-## 🧠 GAT Attention Implementation
+## 🧠 Dual GAT Attention Implementation
 
-### Core Function: `computeGATAttention(paragraphText, queryText)`
+### New Dual Function Architecture
+
+**Primary Function**: `updateVisualization()` now calls both implementations:
+```javascript
+const educationalGAT = computeGATAttention(paragraphText, queryText);        // Educational
+const originalGAT = computeOriginalGATAttention(paragraphText, queryText);   // Original
+applyDualAttentionColoring(educationalGAT, originalGAT, queryText);         // Dual visualization
+```
+
+### Core Educational Function: `computeGATAttention(paragraphText, queryText)`
 
 **Input Processing:**
 - **Paragraph tokenization**: Full context for attention computation
@@ -43,14 +80,57 @@ Complete GAT (Graph Attention Networks) visualization system with mathematical c
 }
 ```
 
-## 🎨 Visualization System
+### New Original GAT Function: `computeOriginalGATAttention(paragraphText, queryText)`
 
-### Original Matrix SVG Integration
+**Key Differences from Educational:**
+- **Self-attention included**: Diagonal elements computed normally
+- **Learnable parameters**: Weight matrix W (64×32) + attention vector a (64D)
+- **Feature transformation**: `Wh_i = W × node_features[i]`
+- **Concatenated attention**: `e_ij = a^T[Wh_i || Wh_j]`
+- **Xavier initialization**: Realistic parameter initialization
+
+**Output Structure (Similar but different values):**
 ```javascript
-// Updates existing matrix SVG (not separate component)
-updateExistingMatrix(attentionMatrix, queryTokens, minAttention, maxAttention)
-├── updateOriginalMatrixWithAttention() // Modify existing rectangles
-└── addAttentionScoresToMatrix()        // Overlay attention scores
+{
+  queryTokens: ["graph", "attention", "mechanisms"],
+  attentionMatrix: [
+    [0.245, 0.412, 0.343],   // Self-attention INCLUDED 
+    [0.387, 0.223, 0.390],   // More uniform distribution
+    [0.368, 0.365, 0.267]    // Due to learnable parameters
+  ],
+  minAttention: 0.1560,      // Higher minimum (includes self-attention)
+  maxAttention: 0.6340,      // Lower maximum (more uniform)
+  computationDetails: {
+    weightMatrix: "64x32",
+    attentionVector: "64D", 
+    selfAttention: "included"
+  }
+}
+```
+
+## 🎨 Dual Visualization System
+
+### Side-by-Side Matrix Visualization
+```javascript
+// NEW: Dual matrix visualization replaces single matrix
+createDualMatrixVisualization(educationalGAT, originalGAT, queryText)
+├── createSingleMatrix() // Blue matrix (Educational) 
+├── createSingleMatrix() // Red matrix (Original)
+├── addComparisonLegend() // Key differences legend
+└── setupDualHoverInteractions() // Enhanced hover for both matrices
+```
+
+### Dual Matrix Layout
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  🎓 Educational │    │   🔬 Original   │    │ Key Differences │
+│     GAT         │    │      GAT        │    │                 │
+│   (Blue cells)  │    │   (Red cells)   │    │ • Self-attn     │
+│                 │    │                 │    │ • Parameters    │
+│ [0  0.5 0.3]    │    │ [0.2 0.4 0.3]   │    │ • Formula       │
+│ [0.6 0  0.7]    │    │ [0.4 0.2 0.4]   │    │ • Complexity    │
+│ [0.4 0.3 0 ]    │    │ [0.4 0.4 0.3]   │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ### Graph Node Transparency

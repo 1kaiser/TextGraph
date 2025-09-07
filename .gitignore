@@ -58,6 +58,10 @@ multi-worker-*.js
 check-*.js
 quick-*.js
 
+# Dual GAT implementation test files
+test_dual_gat.html
+dual-gat-*.js
+
 # Demo creation scripts (keep one for reproducibility)
 create-demo-gif.js
 create-demo-screenshots.js
