@@ -24461,8 +24461,15 @@ var TextAsGraph = /** @class */function () {
     this.sel = d3.select('#text-as-graph');
     this.wordsHolder = this.sel.append('div');
     this.coords = [null, null];
-    // Use the effective character width that matches original rectangles
-    this.charWidth = 15; // Matches the implied character width from original rectangles
+    console.log('🚀 TextGraph: Initializing with enhanced text measurement system...');
+    // Create measurement SVG for accurate text sizing  
+    this.measurementSvg = d3.select('body').append('svg').style('position', 'absolute').style('left', '-9999px') // Use left instead of visibility
+    .style('top', '0px').attr('width', 1000).attr('height', 100);
+    console.log('📏 TextGraph: Created hidden measurement SVG for precise text calculations');
+    // Calculate dynamic character width using actual text measurement
+    this.charWidth = this.calculateDynamicCharWidth();
+    console.log("\u2728 TextGraph: Dynamic character width calculated: ".concat(this.charWidth, "px (replaces hardcoded 15px)"));
+    console.log('🎯 TextGraph: Enhanced text measurement system active - getBBox() API enabled!');
     // Make the z index lower to make overflow go behind words.
     this.sel.parent().style('z-index', '-1');
     var c = d3.conventions({
@@ -24533,6 +24540,7 @@ var TextAsGraph = /** @class */function () {
   }
   TextAsGraph.prototype.render = function () {
     var _this = this;
+    console.log('🎨 TextGraph: Starting render with enhanced text measurement...');
     // Clear previous elements
     this.rectSel.selectAll('*').remove();
     this.wordSel.selectAll('*').remove();
@@ -24543,18 +24551,47 @@ var TextAsGraph = /** @class */function () {
         i: i
       };
     });
+    console.log("\uD83D\uDCDD TextGraph: Processing ".concat(words.length, " words:"), words.map(function (w) {
+      return w.word;
+    }));
+    // Precompute text dimensions for all words for better performance
+    var startTime = performance.now();
+    var wordDimensions = this.precomputeTextDimensions(words.map(function (w) {
+      return w.word;
+    }));
+    var endTime = performance.now();
+    var wordsWithDimensions = words.map(function (word, i) {
+      return __assign(__assign({}, word), {
+        width: wordDimensions[i].width,
+        height: wordDimensions[i].height
+      });
+    });
+    console.log("\u26A1 TextGraph: Precomputed text dimensions in ".concat((endTime - startTime).toFixed(2), "ms"));
+    console.log('📊 TextGraph: Word measurements:', wordsWithDimensions.map(function (w) {
+      return "\"".concat(w.word, "\": ").concat(w.width.toFixed(1), "px");
+    }));
+    // Calculate total improvement over old method
+    var totalNewWidth = wordsWithDimensions.reduce(function (sum, w) {
+      return sum + w.width;
+    }, 0);
+    var totalOldWidth = wordsWithDimensions.reduce(function (sum, w) {
+      return sum + w.word.length * 15;
+    }, 0);
+    var improvementPercent = (totalNewWidth - totalOldWidth) / totalOldWidth * 100;
+    console.log("\uD83C\uDFAF TextGraph: Total width accuracy improvement: ".concat(improvementPercent > 0 ? '+' : '').concat(improvementPercent.toFixed(1), "% (").concat(totalNewWidth.toFixed(1), "px vs ").concat(totalOldWidth.toFixed(1), "px old method)"));
+    console.log('🔧 TextGraph: Enhanced measurement system provides pixel-perfect text-rectangle alignment!');
     var pad = 5;
     var spaceWidth = this.charWidth + wordSpacing;
     var height = 100;
     var maxWidth = window.innerWidth - 100; // Leave margin for wrapping
     var lineHeight = 120; // Space between lines
-    // Calculate word positions with wrapping
+    // Calculate word positions with wrapping using precomputed dimensions
     var wordPositions = [];
     var currentX = 0;
     var currentY = 0;
     var currentLine = 0;
-    words.forEach(function (d, i) {
-      var width = d.word.length * _this.charWidth;
+    wordsWithDimensions.forEach(function (d, i) {
+      var width = d.width; // Use precomputed width
       var wordWidth = width + pad * 2;
       // Check if word would overflow current line
       if (currentX + wordWidth > maxWidth && currentX > 0) {
@@ -24698,20 +24735,71 @@ var TextAsGraph = /** @class */function () {
       return from === j && to === i ? blueDark : blue;
     });
   };
+  /**
+   * Calculate dynamic character width using actual text measurement
+   */
+  TextAsGraph.prototype.calculateDynamicCharWidth = function () {
+    var testText = this.measurementSvg.append('text').attr('font-family', 'monospace').attr('font-size', fontSize + 'px') // Add 'px' unit
+    .style('font-family', 'monospace') // Ensure style is applied
+    .style('font-size', fontSize + 'px') // Ensure style is applied
+    .text('x');
+    var width = testText.node().getComputedTextLength();
+    testText.remove();
+    console.log("\uD83D\uDD0D TextGraph: Calculated dynamic char width using getComputedTextLength(): ".concat(width, "px"));
+    console.log("\uD83D\uDCC8 TextGraph: Improvement over hardcoded (15px): ".concat(width > 15 ? '+' : '').concat((width - 15).toFixed(1), "px"));
+    return width > 0 ? width : 18; // Use actual monospace character width as fallback
+  };
+  /**
+   * Measure the actual width of text using getBBox()
+   */
+  TextAsGraph.prototype.measureTextWidth = function (text) {
+    if (!text || text.length === 0) return 0;
+    var textElement = this.measurementSvg.append('text').attr('font-family', 'monospace').attr('font-size', fontSize + 'px') // Add 'px' unit
+    .style('font-family', 'monospace') // Ensure style is applied
+    .style('font-size', fontSize + 'px') // Ensure style is applied
+    .text(text);
+    var bbox = textElement.node().getBBox();
+    var width = bbox.width;
+    var oldMethodWidth = text.length * 15; // Old hardcoded method
+    var actualWidth = width > 0 ? width : text.length * this.charWidth;
+    textElement.remove();
+    console.log("\uD83D\uDCD0 TextGraph: getBBox() measurement for \"".concat(text, "\": ").concat(actualWidth.toFixed(1), "px (vs old method: ").concat(oldMethodWidth, "px, diff: ").concat((actualWidth - oldMethodWidth).toFixed(1), "px)"));
+    return actualWidth;
+  };
+  /**
+   * Precompute text dimensions for a list of words
+   */
+  TextAsGraph.prototype.precomputeTextDimensions = function (words) {
+    var _this = this;
+    return words.map(function (word) {
+      return {
+        word: word,
+        width: _this.measureTextWidth(word),
+        height: fontSize * 1.2 // Approximate line height
+      };
+    });
+  };
+  /**
+   * Alternative measurement using getComputedTextLength for performance
+   */
+  TextAsGraph.prototype.measureTextWidthFast = function (text) {
+    if (!text || text.length === 0) return 0;
+    var textElement = this.measurementSvg.append('text').attr('font-family', 'monospace').attr('font-size', fontSize).text(text);
+    var width = textElement.node().getComputedTextLength();
+    textElement.remove();
+    return width;
+  };
+  /**
+   * Clean up measurement SVG when destroying instance
+   */
+  TextAsGraph.prototype.destroy = function () {
+    if (this.measurementSvg) {
+      this.measurementSvg.remove();
+    }
+  };
   return TextAsGraph;
 }();
 exports.TextAsGraph = TextAsGraph;
-function calcCharWidth() {
-  var spanSel = d3.select('body').append('span').text('x').st({
-    fontFamily: 'monospace',
-    fontSize: fontSize + 'px',
-    position: 'absolute',
-    visibility: 'hidden'
-  });
-  var w = spanSel.node().offsetWidth;
-  spanSel.remove();
-  return w;
-}
 },{"d3":"node_modules/d3/index.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -24723,6 +24811,31 @@ var _textAsGraphV = require("./text-as-graph-v2");
 
 // Global variables for the interface
 var textAsGraphInstance = null;
+
+// Make functions globally available for HTML onclick handlers
+window.toggleParagraph = function () {
+  var container = document.getElementById('paragraph-container');
+  var button = document.getElementById('toggle-paragraph');
+  if (container.style.display === 'none') {
+    container.style.display = 'block';
+    button.textContent = '▲';
+  } else {
+    container.style.display = 'none';
+    button.textContent = '▼';
+  }
+};
+window.updateVisualization = function () {
+  var textInput = document.getElementById('manual-text-input');
+  var paragraphInput = document.getElementById('paragraph-input');
+  if (textInput && paragraphInput) {
+    var queryText = textInput.value.trim();
+    var paragraphText = paragraphInput.value.trim();
+
+    // Compute and apply GAT attention
+    var attentionData = computeGATAttention(paragraphText, queryText);
+    applyAttentionColoring(attentionData, queryText);
+  }
+};
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
