@@ -4,7 +4,7 @@
 
 Interactive text-to-graph visualization with Graph Attention Networks (GAT) computation and transparency-based attention mapping.
 
-![TextGraph GAT Visualization](https://raw.githubusercontent.com/1kaiser/TextGraph/master/screenshots/gat-test-worker-2-1756616821922.png)
+![TextGraph Interactive Demo](https://raw.githubusercontent.com/1kaiser/TextGraph/master/textgraph-demo-optimized.gif)
 
 ## 🎯 Overview
 
