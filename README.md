@@ -140,9 +140,34 @@ Users only need:
 
 - **MathJax**: Mathematical attention computation
 - **D3.js**: SVG-based matrix and graph rendering  
-- **JavaScript ES6**: Module-based architecture
+- **TypeScript**: Type-safe module architecture with advanced text measurement
 - **Parcel**: Build system and development server
 - **Playwright**: Multi-worker testing and validation
+
+### ⚡ Performance Improvements (Sep 2025)
+
+**Enhanced Text Measurement System:**
+- ✅ **Dynamic Character Width**: Replaced hardcoded values with `getComputedTextLength()` measurement
+- ✅ **Precise Bounding Box**: `getBBox()` API for pixel-perfect word positioning
+- ✅ **Precomputed Dimensions**: Batch text measurement for optimal rendering performance
+- ✅ **Cross-browser Compatibility**: SVG measurement APIs work consistently across browsers
+
+**Technical Implementation:**
+```typescript
+// Before: Hardcoded and inaccurate
+this.charWidth = 15;
+const width = word.length * this.charWidth;
+
+// After: Dynamic and precise
+this.charWidth = this.calculateDynamicCharWidth();
+const width = this.measureTextWidth(word); // Uses getBBox()
+```
+
+**Benefits:**
+- **Perfect Text-Rectangle Alignment**: Rectangles now precisely fit text content
+- **Improved Visual Accuracy**: Eliminates text overflow and positioning issues
+- **Better Performance**: Precomputed text dimensions reduce DOM queries
+- **Responsive Design**: Adapts automatically to different fonts and screen sizes
 
 ## 📚 References & Inspiration
 

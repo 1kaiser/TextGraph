@@ -21,10 +21,19 @@ export class TextAsGraph {
   private coords = [null, null];
   private adjMatSel;
   private charWidth;
+  private measurementSvg; // SVG for text measurement
 
   constructor() {
-    // Use the effective character width that matches original rectangles
-    this.charWidth = 15; // Matches the implied character width from original rectangles
+    // Create measurement SVG for accurate text sizing
+    this.measurementSvg = d3.select('body').append('svg')
+      .style('position', 'absolute')
+      .style('visibility', 'hidden')
+      .style('top', '-9999px')
+      .attr('width', 1000)
+      .attr('height', 100);
+    
+    // Calculate dynamic character width using actual text measurement
+    this.charWidth = this.calculateDynamicCharWidth();
     
     // Make the z index lower to make overflow go behind words.
     this.sel.parent().style('z-index', '-1');
@@ -96,20 +105,28 @@ export class TextAsGraph {
 
     const words = this.inputNode.value.split(' ').map((word, i) => ({ word, i }));
     
+    // Precompute text dimensions for all words for better performance
+    const wordDimensions = this.precomputeTextDimensions(words.map(w => w.word));
+    const wordsWithDimensions = words.map((word, i) => ({
+      ...word,
+      width: wordDimensions[i].width,
+      height: wordDimensions[i].height
+    }));
+    
     const pad = 5;
     const spaceWidth = this.charWidth + wordSpacing;
     const height = 100;
     const maxWidth = window.innerWidth - 100; // Leave margin for wrapping
     const lineHeight = 120; // Space between lines
     
-    // Calculate word positions with wrapping
+    // Calculate word positions with wrapping using precomputed dimensions
     const wordPositions = [];
     let currentX = 0;
     let currentY = 0;
     let currentLine = 0;
 
-    words.forEach((d, i) => {
-      const width = d.word.length * this.charWidth;
+    wordsWithDimensions.forEach((d, i) => {
+      const width = d.width; // Use precomputed width
       const wordWidth = width + pad * 2;
       
       // Check if word would overflow current line
@@ -125,7 +142,7 @@ export class TextAsGraph {
         ...d,
         x: currentX,
         y: currentY,
-        width: width,
+        width: width, // Already using precomputed width
         line: currentLine
       });
       
@@ -311,17 +328,75 @@ export class TextAsGraph {
         return (from === j && to === i) ? blueDark : blue;
       });
   }
+
+  /**
+   * Calculate dynamic character width using actual text measurement
+   */
+  private calculateDynamicCharWidth(): number {
+    const testText = this.measurementSvg.append('text')
+      .attr('font-family', 'monospace')
+      .attr('font-size', fontSize)
+      .text('x');
+    
+    const width = testText.node().getComputedTextLength();
+    testText.remove();
+    
+    return width;
+  }
+
+  /**
+   * Measure the actual width of text using getBBox()
+   */
+  private measureTextWidth(text: string): number {
+    if (!text || text.length === 0) return 0;
+    
+    const textElement = this.measurementSvg.append('text')
+      .attr('font-family', 'monospace')
+      .attr('font-size', fontSize)
+      .text(text);
+    
+    const bbox = textElement.node().getBBox();
+    const width = bbox.width;
+    
+    textElement.remove();
+    return width;
+  }
+
+  /**
+   * Precompute text dimensions for a list of words
+   */
+  private precomputeTextDimensions(words: string[]): Array<{word: string, width: number, height: number}> {
+    return words.map(word => ({
+      word,
+      width: this.measureTextWidth(word),
+      height: fontSize * 1.2 // Approximate line height
+    }));
+  }
+
+  /**
+   * Alternative measurement using getComputedTextLength for performance
+   */
+  private measureTextWidthFast(text: string): number {
+    if (!text || text.length === 0) return 0;
+    
+    const textElement = this.measurementSvg.append('text')
+      .attr('font-family', 'monospace')
+      .attr('font-size', fontSize)
+      .text(text);
+    
+    const width = textElement.node().getComputedTextLength();
+    textElement.remove();
+    
+    return width;
+  }
+
+  /**
+   * Clean up measurement SVG when destroying instance
+   */
+  public destroy(): void {
+    if (this.measurementSvg) {
+      this.measurementSvg.remove();
+    }
+  }
 }
 
-function calcCharWidth() {
-  const spanSel = d3.select('body').append('span').text('x')
-    .st({ 
-      fontFamily: 'monospace', 
-      fontSize: fontSize + 'px',  // Use px unit for correct measurement
-      position: 'absolute',
-      visibility: 'hidden'
-    });
-  const w = spanSel.node().offsetWidth;
-  spanSel.remove();
-  return w;
-}
