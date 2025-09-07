@@ -18,10 +18,10 @@ This system implements a complete GAT attention visualization where:
 ## 🚀 Quick Start
 
 ```bash
-npm run dev -- --host 0.0.0.0 --port 42040
+npm run dev
 ```
 
-Access: http://localhost:42040
+Access: http://localhost:1234
 
 ## 📱 Interface
 
