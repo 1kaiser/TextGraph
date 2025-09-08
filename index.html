@@ -37,6 +37,18 @@
         <!-- Query Sentence Section -->
         <div style="text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 500;">🎯 Query Sentence</div>
         <input type="text" id="manual-text-input" placeholder="Enter query sentence..." value="Graph attention mechanisms capture relationships" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+        <!-- Embedding Method Selection -->
+        <div style="margin-bottom: 8px; font-size: 11px;">
+            <label style="display: flex; align-items: center; gap: 4px;">
+                <input type="radio" name="embedding-method" value="synthetic" checked style="margin: 0;">
+                <span>🎲 Synthetic Embeddings (Fast)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                <input type="radio" name="embedding-method" value="real" style="margin: 0;">
+                <span>🧠 EmbeddingGemma (Semantic)</span>
+            </label>
+        </div>
+        
         <div style="text-align: center; margin-top: 8px;">
             <button id="update-graph" onclick="updateVisualization()" style="background: #4285f4; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔄 Compute GAT</button>
         </div>
@@ -46,6 +58,7 @@
     <div id='text-as-graph' style="width: 100%; min-height: 400px; position: relative; cursor: grab;" class="draggable-graph"></div>
     
     <script src="index.js"></script>
+    <script src="embedding-gemma-demo.js"></script>
     <script>
         // Make the input box draggable and hoverable
         let isDragging = false;

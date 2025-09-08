@@ -71,8 +71,62 @@ function setupTextInput() {
   });
 }
 
+// Debug function for testing dual GAT
+window.debugDualGAT = function debugDualGAT() {
+  console.log('🔍 DEBUG: Testing dual GAT functions...');
+  
+  const testParagraph = 'Neural networks are powerful tools. Graph attention mechanisms capture relationships.';
+  const testQuery = 'graph attention mechanisms';
+  
+  console.log('📝 Test paragraph:', testParagraph);
+  console.log('🎯 Test query:', testQuery);
+  
+  // Test Educational GAT
+  try {
+    const educationalResult = computeGATAttention(testParagraph, testQuery);
+    console.log('🎓 Educational GAT result:', educationalResult);
+  } catch (error) {
+    console.error('❌ Educational GAT error:', error);
+  }
+  
+  // Test Original GAT
+  try {
+    const originalResult = computeOriginalGATAttention(testParagraph, testQuery);
+    console.log('🔬 Original GAT result:', originalResult);
+  } catch (error) {
+    console.error('❌ Original GAT error:', error);
+  }
+  
+  // Check for existing matrices
+  const container = d3.select('#text-as-graph');
+  const dualMatrices = container.selectAll('.dual-matrix');
+  console.log(`📊 Existing dual matrices: ${dualMatrices.size()}`);
+  
+  // Try to manually trigger the dual matrix creation
+  try {
+    const educationalGAT = computeGATAttention(testParagraph, testQuery);
+    const originalGAT = computeOriginalGATAttention(testParagraph, testQuery);
+    
+    console.log('🔧 Manually triggering createOriginalStyleDualMatrices...');
+    createOriginalStyleDualMatrices(educationalGAT, originalGAT, testQuery);
+    
+    // Check again after creation
+    const newDualMatrices = container.selectAll('.dual-matrix');
+    console.log(`📊 Dual matrices after creation: ${newDualMatrices.size()}`);
+    
+    // Setup hover interactions
+    console.log('🖱️ Setting up hover interactions...');
+    setupGraphToMatrixHover(educationalGAT.queryTokens);
+    
+  } catch (error) {
+    console.error('❌ Manual creation error:', error);
+  }
+  
+  console.log('✅ Debug test complete');
+};
+
 // Global function to update the visualization with GAT
-window.updateVisualization = function updateVisualization() {
+window.updateVisualization = async function updateVisualization() {
   const textInput = document.getElementById('manual-text-input');
   const paragraphInput = document.getElementById('paragraph-input');
   
@@ -89,13 +143,34 @@ window.updateVisualization = function updateVisualization() {
     return;
   }
   
-  console.log('🧠 Computing GAT attention...');
+  // Check which embedding method is selected
+  const embeddingMethod = document.querySelector('input[name="embedding-method"]:checked')?.value || 'synthetic';
+  
+  console.log(`🧠 Computing GAT attention with ${embeddingMethod} embeddings...`);
   console.log('📄 Paragraph:', paragraphText.substring(0, 50) + '...');
   console.log('🎯 Query:', queryText);
   
   // Compute both Educational and Original GAT attention
-  const educationalGAT = computeGATAttention(paragraphText, queryText);
-  const originalGAT = computeOriginalGATAttention(paragraphText, queryText);
+  let educationalGAT, originalGAT;
+  
+  if (embeddingMethod === 'real' && window.EmbeddingGemmaManager) {
+    // Use EmbeddingGemma for semantic embeddings
+    console.log('🔧 Using EmbeddingGemma semantic embeddings...');
+    
+    try {
+      educationalGAT = await computeEmbeddingGATAttention(paragraphText, queryText, 'educational');
+      originalGAT = await computeEmbeddingGATAttention(paragraphText, queryText, 'original');
+    } catch (error) {
+      console.error('❌ EmbeddingGemma failed, falling back to synthetic:', error);
+      educationalGAT = computeGATAttention(paragraphText, queryText);
+      originalGAT = computeOriginalGATAttention(paragraphText, queryText);
+    }
+  } else {
+    // Use synthetic embeddings (original method)
+    console.log('🎲 Using synthetic embeddings...');
+    educationalGAT = computeGATAttention(paragraphText, queryText);
+    originalGAT = computeOriginalGATAttention(paragraphText, queryText);
+  }
   
   console.log('📊 Educational GAT range:', educationalGAT.minAttention.toFixed(4), 'to', educationalGAT.maxAttention.toFixed(4));
   console.log('📊 Original GAT range:', originalGAT.minAttention.toFixed(4), 'to', originalGAT.maxAttention.toFixed(4));
@@ -775,9 +850,11 @@ function createLearnableWeightMatrix(inputDim, outputDim) {
 
 function createAttentionVector(dim) {
   const a = [];
+  // Create more diverse attention weights for better differentiation
   for (let i = 0; i < dim; i++) {
-    // Simulated learnable attention weights
-    a.push(Math.random() * 0.2 - 0.1);
+    // Use deterministic but varied weights based on position
+    const weight = Math.sin(i * 0.1) * 0.3 + Math.cos(i * 0.05) * 0.2;
+    a.push(weight);
   }
   return a;
 }
@@ -851,8 +928,14 @@ function createOriginalAttentionScores(transformedFeatures, attentionVector) {
       
       // Compute e_ij = a^T [Wh_i || Wh_j]
       let e_ij = 0;
-      for (let k = 0; k < attentionVector.length; k++) {
+      for (let k = 0; k < Math.min(attentionVector.length, concatenated.length); k++) {
         e_ij += attentionVector[k] * concatenated[k];
+      }
+      
+      // Debug logging for first computation
+      if (i === 0 && j === 0) {
+        console.log(`🔍 Debug: concatenated length=${concatenated.length}, attention vector length=${attentionVector.length}`);
+        console.log(`🔍 Debug: e_ij raw=${e_ij.toFixed(4)}`);
       }
       
       // Apply LeakyReLU activation
@@ -875,11 +958,11 @@ function applyDualAttentionColoring(educationalGAT, originalGAT, queryText) {
   // Apply graph node coloring using educational GAT (for simplicity)
   applyGraphNodeColoring(educationalGAT);
   
-  // Create side-by-side matrix comparison
-  createDualMatrixVisualization(educationalGAT, originalGAT, queryText);
+  // Use original matrix update approach but create two matrices
+  createOriginalStyleDualMatrices(educationalGAT, originalGAT, queryText);
   
-  // Add comparative hover interactions
-  setupDualHoverInteractions(educationalGAT, originalGAT);
+  // Add bidirectional hover interactions between graph and matrices
+  setupGraphToMatrixHover(educationalGAT.queryTokens);
 }
 
 function applyGraphNodeColoring(attentionData) {
@@ -916,113 +999,217 @@ function applyGraphNodeColoring(attentionData) {
   });
 }
 
-function createDualMatrixVisualization(educationalGAT, originalGAT, queryText) {
-  console.log('📊 Creating side-by-side matrix comparison...');
+function createOriginalStyleDualMatrices(educationalGAT, originalGAT, queryText) {
+  console.log('📊 Creating dual matrices in original TextAsGraph style...');
   
-  const svg = d3.select('#text-as-graph').select('svg');
-  if (svg.empty()) {
-    console.log('❌ No SVG found for dual matrix visualization');
+  // Find the main text-as-graph container
+  const container = d3.select('#text-as-graph');
+  if (container.empty()) {
+    console.log('❌ No text-as-graph container found');
     return;
   }
   
-  // Clear existing matrices
-  svg.selectAll('.matrix-label, .adj-mat-square, .matrix-text').remove();
+  // Remove any existing dual matrices
+  container.selectAll('.dual-matrix').remove();
   
-  const matrixSize = 35;
-  const matrixGap = 50;
-  const startY = 200;
+  const queryTokens = educationalGAT.queryTokens;
+  const w = 26; // Same as original TextAsGraph (20 * 1.3)
+  const matrixGap = 150; // Gap between matrices
   
-  // Educational GAT Matrix (Left)
-  createSingleMatrix(
-    svg, 
-    educationalGAT.attentionMatrix, 
-    educationalGAT.queryTokens,
+  // Calculate positions to center both matrices
+  const screenWidth = window.innerWidth;
+  const totalWidth = (w * queryTokens.length * 2) + matrixGap + 120; // Space for labels
+  const startX = Math.max(50, (screenWidth - totalWidth) / 2);
+  
+  // Create Educational GAT Matrix (Left - Blue)
+  const educationalMatrix = container.append('svg')
+    .attr('class', 'dual-matrix educational-matrix')
+    .style('position', 'absolute')
+    .style('top', '200px')
+    .style('left', startX + 'px')
+    .style('overflow', 'visible')
+    .attr('font-size', 12)
+    .attr('fill', 'gray');
+    
+  createOriginalStyleMatrix(
+    educationalMatrix,
+    educationalGAT.attentionMatrix,
+    queryTokens,
     educationalGAT.minAttention,
     educationalGAT.maxAttention,
-    50, // x position
-    startY,
     '🎓 Educational GAT',
-    '#3b82f6' // Blue
+    '#3b82f6', // Blue
+    w
   );
   
-  // Original GAT Matrix (Right)  
-  const rightX = 50 + (educationalGAT.queryTokens.length * matrixSize) + matrixGap;
-  createSingleMatrix(
-    svg,
+  // Create Original GAT Matrix (Right - Red)
+  const rightX = startX + (w * queryTokens.length) + matrixGap + 80; // Extra space for labels
+  const originalMatrix = container.append('svg')
+    .attr('class', 'dual-matrix original-matrix')
+    .style('position', 'absolute')
+    .style('top', '200px')
+    .style('left', rightX + 'px')
+    .style('overflow', 'visible')
+    .attr('font-size', 12)
+    .attr('fill', 'gray');
+    
+  createOriginalStyleMatrix(
+    originalMatrix,
     originalGAT.attentionMatrix,
-    originalGAT.queryTokens, 
+    queryTokens,
     originalGAT.minAttention,
     originalGAT.maxAttention,
-    rightX,
-    startY,
     '🔬 Original GAT',
-    '#dc2626' // Red
+    '#dc2626', // Red
+    w
   );
-  
-  // Add comparison legend
-  addComparisonLegend(svg, rightX + (originalGAT.queryTokens.length * matrixSize) + 20, startY);
 }
 
-function createSingleMatrix(svg, attentionMatrix, queryTokens, minAttention, maxAttention, startX, startY, title, baseColor) {
-  // Add matrix title
+function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttention, maxAttention, title, baseColor, w) {
+  // Add title below matrix
   svg.append('text')
-    .attr('class', 'matrix-label')
-    .attr('x', startX + (queryTokens.length * 35) / 2)
-    .attr('y', startY - 20)
+    .attr('class', 'matrix-title')
+    .attr('x', (queryTokens.length * w) / 2)
+    .attr('y', (queryTokens.length * w) + 40)
     .attr('text-anchor', 'middle')
     .style('font-size', '14px')
     .style('font-weight', 'bold')
     .style('fill', '#374151')
     .text(title);
   
-  // Create matrix cells
-  attentionMatrix.forEach((row, i) => {
-    row.forEach((attention, j) => {
-      let opacity;
-      let cellColor;
+  // Create pairs for matrix cells (exactly like original TextAsGraph)
+  const words = queryTokens.map((word, i) => ({ word, i }));
+  const pairs = d3.cross(words, words);
+  
+  // Add adjacency matrix rectangles with GAT attention coloring
+  svg.selectAll('rect')
+    .data(pairs)
+    .enter()
+    .append('rect')
+    .attr('class', 'adj-mat-square')
+    .attr('width', w)
+    .attr('height', w)
+    .attr('transform', d => `translate(${d[0].i * w}, ${d[1].i * w})`)
+    .attr('fill', d => {
+      const i = d[1].i; // row
+      const j = d[0].i; // column
+      const attention = attentionMatrix[i][j];
       
       if (attention === 0) {
-        opacity = 0.1;
-        cellColor = '#e5e7eb';
+        return '#f3f4f6'; // Light gray for zero values
       } else {
+        return baseColor; // Blue or red based on GAT type
+      }
+    })
+    .attr('opacity', d => {
+      const i = d[1].i; // row  
+      const j = d[0].i; // column
+      const attention = attentionMatrix[i][j];
+      
+      if (attention === 0) {
+        return 0.1; // Very transparent for zero values
+      } else {
+        // Map attention to opacity
         const range = maxAttention - minAttention;
         if (range > 0) {
           const normalizedValue = (attention - minAttention) / range;
-          opacity = 0.2 + 0.8 * normalizedValue;
+          return 0.2 + 0.8 * normalizedValue; // 20% to 100% opacity
         } else {
-          opacity = 0.5;
+          return 0.6;
         }
-        cellColor = baseColor;
       }
+    })
+    .attr('stroke', '#aaa')
+    .attr('stroke-width', 0.2)
+    .on('mouseover', function(d) {
+      const i = d[1].i; // row
+      const j = d[0].i; // column
       
-      // Create cell
-      svg.append('rect')
-        .attr('class', 'adj-mat-square')
-        .attr('data-matrix', title.includes('Educational') ? 'edu' : 'orig')
-        .attr('data-row', i)
-        .attr('data-col', j)
-        .attr('x', startX + j * 35)
-        .attr('y', startY + i * 35)
-        .attr('width', 33)
-        .attr('height', 33)
-        .style('fill', cellColor)
-        .style('opacity', opacity)
-        .style('stroke', '#1f2937')
-        .style('stroke-width', 1);
+      // Highlight this cell
+      d3.select(this).style('stroke', '#000').style('stroke-width', 2);
       
-      // Add attention value text
-      svg.append('text')
-        .attr('class', 'matrix-text')
-        .attr('x', startX + j * 35 + 16.5)
-        .attr('y', startY + i * 35 + 20)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '8px')
-        .style('font-weight', 'bold')
-        .style('fill', opacity > 0.5 ? 'white' : 'black')
-        .style('pointer-events', 'none')
-        .text(attention.toFixed(1));
+      // Highlight corresponding row and column labels
+      svg.selectAll('text.top')
+        .style('fill', (labelD) => labelD.i === j ? '#000' : 'gray')
+        .style('font-weight', (labelD) => labelD.i === j ? 'bold' : 'normal');
+        
+      svg.selectAll('text.side')
+        .style('fill', (labelD) => labelD.i === i ? '#000' : 'gray')
+        .style('font-weight', (labelD) => labelD.i === i ? 'bold' : 'normal');
+      
+      // Highlight corresponding graph nodes
+      d3.selectAll('#text-as-graph text').each(function(_, nodeIndex) {
+        if (nodeIndex === i || nodeIndex === j) {
+          d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+        }
+      });
+      
+      // Show attention value in console
+      const attention = attentionMatrix[i][j];
+      console.log(`🔗 ${title} [${i},${j}]: ${queryTokens[i]} → ${queryTokens[j]} = ${attention.toFixed(3)}`);
+    })
+    .on('mouseout', function(d) {
+      // Reset cell stroke
+      d3.select(this).style('stroke', '#aaa').style('stroke-width', 0.2);
+      
+      // Reset labels
+      svg.selectAll('text.top, text.side')
+        .style('fill', 'gray')
+        .style('font-weight', 'normal');
+        
+      // Reset graph nodes
+      d3.selectAll('#text-as-graph text').style('stroke', 'none');
     });
-  });
+    
+  // Add attention values as text overlays
+  svg.selectAll('text.attention-value')
+    .data(pairs)
+    .enter()
+    .append('text')
+    .attr('class', 'attention-value')
+    .attr('transform', d => `translate(${d[0].i * w + w/2}, ${d[1].i * w + w/2 + 4})`)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '10px')
+    .style('font-weight', 'bold')
+    .style('pointer-events', 'none')
+    .attr('fill', d => {
+      const i = d[1].i;
+      const j = d[0].i;
+      const attention = attentionMatrix[i][j];
+      const range = maxAttention - minAttention;
+      const normalizedValue = range > 0 ? (attention - minAttention) / range : 0.5;
+      const opacity = 0.2 + 0.8 * normalizedValue;
+      return opacity > 0.5 ? 'white' : '#1f2937';
+    })
+    .text(d => {
+      const i = d[1].i;
+      const j = d[0].i;
+      return attentionMatrix[i][j].toFixed(1);
+    });
+
+  // Add top words (rotated, exactly like original)
+  svg.selectAll('text.top')
+    .data(words)
+    .enter()
+    .append('text')
+    .attr('class', 'top')
+    .attr('transform', d => `translate(${d.i * w + w / 2}, -5) rotate(-90)`)
+    .attr('text-anchor', 'start')
+    .style('font-size', '12px')
+    .style('fill', 'gray')
+    .text(d => d.word);
+
+  // Add side words (exactly like original)
+  svg.selectAll('text.side')
+    .data(words)
+    .enter()
+    .append('text')
+    .attr('class', 'side')
+    .attr('transform', d => `translate(-5, ${(d.i + .75) * w})`)
+    .attr('text-anchor', 'end')
+    .style('font-size', '12px')
+    .style('fill', 'gray')
+    .text(d => d.word);
 }
 
 function addComparisonLegend(svg, x, y) {
@@ -1054,29 +1241,138 @@ function addComparisonLegend(svg, x, y) {
   });
 }
 
-function setupDualHoverInteractions(educationalGAT, originalGAT) {
-  console.log('🖱️ Setting up dual matrix hover interactions...');
+function setupGraphToMatrixHover(queryTokens) {
+  console.log('🖱️ Setting up bidirectional graph-matrix hover interactions...');
   
-  // Enhanced hover for matrix cells showing both values
-  d3.selectAll('.adj-mat-square').on('mouseover', function() {
-    const element = d3.select(this);
-    const matrixType = element.attr('data-matrix');
-    const row = parseInt(element.attr('data-row'));
-    const col = parseInt(element.attr('data-col'));
-    
-    const eduValue = educationalGAT.attentionMatrix[row][col];
-    const origValue = originalGAT.attentionMatrix[row][col];
-    
-    console.log(`🔍 Comparison [${row},${col}]: Educational=${eduValue.toFixed(3)}, Original=${origValue.toFixed(3)}`);
-    
-    // Highlight corresponding cells in both matrices
-    d3.selectAll(`.adj-mat-square[data-row="${row}"][data-col="${col}"]`)
-      .style('stroke', '#000')
-      .style('stroke-width', 3);
+  // Graph nodes hover → highlight matrix rows and columns
+  d3.selectAll('#text-as-graph text').on('mouseover', function(d, i) {
+    if (i < queryTokens.length) {
+      console.log(`🎯 Hovering graph node ${i}: ${queryTokens[i]}`);
       
+      // Highlight all matrix cells in row i and column i in both matrices
+      d3.selectAll('.dual-matrix rect').each(function(rectD) {
+        const row = rectD[1].i;
+        const col = rectD[0].i;
+        
+        if (row === i || col === i) {
+          d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+        }
+      });
+      
+      // Highlight labels in both matrices
+      d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').each(function(labelD) {
+        if (labelD.i === i) {
+          d3.select(this).style('fill', '#000').style('font-weight', 'bold');
+        }
+      });
+      
+      // Highlight this graph node
+      d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+    }
   }).on('mouseout', function() {
-    d3.selectAll('.adj-mat-square')
-      .style('stroke', '#1f2937')
-      .style('stroke-width', 1);
+    // Reset everything
+    d3.selectAll('.dual-matrix rect').style('stroke', '#aaa').style('stroke-width', 0.2);
+    d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').style('fill', 'gray').style('font-weight', 'normal');
+    d3.selectAll('#text-as-graph text').style('stroke', 'none');
   });
 }
+
+// Manual debug function for testing dual GAT implementation
+async function debugDualGAT(useEmbedding = false) {
+  console.log(`🧪 Manual GAT Test ${useEmbedding ? 'with EmbeddingGemma' : 'with synthetic embeddings'}`);
+  
+  const testParagraph = 'Neural networks are powerful tools. Graph attention mechanisms capture relationships.';
+  const testQuery = 'graph attention mechanisms';
+  
+  console.log('📝 Test paragraph:', testParagraph);
+  console.log('🎯 Test query:', testQuery);
+  
+  let educationalResult, originalResult;
+  
+  if (useEmbedding && window.EmbeddingGemmaManager) {
+    console.log('🔬 Computing with EmbeddingGemma...');
+    try {
+      educationalResult = await computeEmbeddingGATAttention(testParagraph, testQuery, 'educational');
+      originalResult = await computeEmbeddingGATAttention(testParagraph, testQuery, 'original');
+    } catch (error) {
+      console.error('❌ EmbeddingGemma failed, falling back to synthetic:', error);
+      educationalResult = computeGATAttention(testParagraph, testQuery);
+      originalResult = computeOriginalGATAttention(testParagraph, testQuery);
+    }
+  } else {
+    console.log('🧠 Computing Educational GAT (synthetic)...');
+    educationalResult = computeGATAttention(testParagraph, testQuery);
+    console.log('🎓 Educational GAT result:', educationalResult);
+    
+    console.log('🔬 Computing Original GAT (synthetic)...');
+    originalResult = computeOriginalGATAttention(testParagraph, testQuery);
+    console.log('🔬 Original GAT result:', originalResult);
+  }
+  
+  console.log('📊 Creating dual matrices...');
+  createOriginalStyleDualMatrices(educationalResult, originalResult, testQuery);
+  
+  console.log('✅ Manual test complete - dual matrices should be visible');
+  
+  return {
+    educational: educationalResult,
+    original: originalResult,
+    method: useEmbedding ? 'EmbeddingGemma' : 'Synthetic',
+    status: 'completed'
+  };
+}
+
+// Utility function for tokenizing text (used by EmbeddingGemma)
+function tokenizeText(text) {
+  return text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w);
+}
+
+// EmbeddingGemma-based GAT computation
+async function computeEmbeddingGATAttention(paragraphText, queryText, type = 'educational') {
+  console.log(`🔬 Computing ${type} GAT with EmbeddingGemma...`);
+  
+  if (!window.EmbeddingGemmaManager) {
+    throw new Error('EmbeddingGemmaManager not available');
+  }
+  
+  const tokens = tokenizeText(queryText);
+  const context = paragraphText ? 'document' : 'query';
+  
+  // Use EmbeddingGemma to create attention matrix
+  const embeddingResult = await window.EmbeddingGemmaManager.createEmbeddingAttentionMatrix(tokens, context);
+  
+  if (type === 'educational') {
+    // Educational: exclude self-attention (set diagonal to 0)
+    for (let i = 0; i < tokens.length; i++) {
+      embeddingResult.attentionMatrix[i][i] = 0;
+    }
+    
+    // Recalculate min/max after removing self-attention
+    let minAttention = 1.0;
+    let maxAttention = 0.0;
+    
+    for (let i = 0; i < tokens.length; i++) {
+      for (let j = 0; j < tokens.length; j++) {
+        const attention = embeddingResult.attentionMatrix[i][j];
+        if (attention > 0) {
+          if (attention < minAttention) minAttention = attention;
+          if (attention > maxAttention) maxAttention = attention;
+        }
+      }
+    }
+    
+    embeddingResult.minAttention = minAttention;
+    embeddingResult.maxAttention = maxAttention;
+  }
+  
+  // Add computation details
+  embeddingResult.computationDetails.type = type;
+  embeddingResult.computationDetails.source = 'EmbeddingGemma';
+  
+  console.log(`✨ ${type} EmbeddingGAT computed: ${embeddingResult.minAttention.toFixed(3)}-${embeddingResult.maxAttention.toFixed(3)}`);
+  
+  return embeddingResult;
+}
+
+// Make function globally available
+window.debugDualGAT = debugDualGAT;

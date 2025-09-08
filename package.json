@@ -17,8 +17,10 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
+    "@huggingface/transformers": "^3.7.1",
     "d3": "^5.16.0",
-    "d3-jetpack": "^2.2.1"
+    "d3-jetpack": "^2.2.1",
+    "puppeteer": "^24.19.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
