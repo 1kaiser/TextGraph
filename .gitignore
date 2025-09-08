@@ -58,6 +58,27 @@ multi-worker-*.js
 check-*.js
 quick-*.js
 
+# EmbeddingGemma integration test files
+test-embeddinggemma-*.spec.js
+test-debug-embedding.spec.js
+test-dual-gat-functionality.spec.js
+test-different-sentences.spec.js
+embedding-debug-test.png
+dual-gat-functionality-test.png
+different-sentences-test.png
+embeddinggemma-simple-test.png
+debug-function-test.png
+
+# EmbeddingGemma development files (keep demo implementation)
+embedding-gemma.js
+embedding-gemma-global.js
+!embedding-gemma-demo.js
+
+# Playwright test results and artifacts
+test-results/
+playwright-report/
+.playwright/
+
 # Dual GAT implementation test files
 test_dual_gat.html
 dual-gat-*.js
