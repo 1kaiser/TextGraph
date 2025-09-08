@@ -24805,10 +24805,18 @@ exports.TextAsGraph = TextAsGraph;
 
 require("./d3-conventions");
 var _textAsGraphV = require("./text-as-graph-v2");
-/**
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
+function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; } /**
  * Main entry point for text-as-graph visualization
  */
-
 // Global variables for the interface
 var textAsGraphInstance = null;
 
@@ -24869,51 +24877,156 @@ function setupTextInput() {
   });
 }
 
-// Global function to update the visualization with GAT
-window.updateVisualization = function updateVisualization() {
-  var textInput = document.getElementById('manual-text-input');
-  var paragraphInput = document.getElementById('paragraph-input');
-  if (!textInput || !textAsGraphInstance) {
-    console.warn('Cannot update visualization: missing elements');
-    return;
-  }
-  var queryText = textInput.value.trim();
-  var paragraphText = paragraphInput ? paragraphInput.value.trim() : '';
-  if (!queryText) {
-    console.warn('Cannot update visualization: empty query text');
-    return;
-  }
-  console.log('🧠 Computing GAT attention...');
-  console.log('📄 Paragraph:', paragraphText.substring(0, 50) + '...');
-  console.log('🎯 Query:', queryText);
+// Debug function for testing dual GAT
+window.debugDualGAT = function debugDualGAT() {
+  console.log('🔍 DEBUG: Testing dual GAT functions...');
+  var testParagraph = 'Neural networks are powerful tools. Graph attention mechanisms capture relationships.';
+  var testQuery = 'graph attention mechanisms';
+  console.log('📝 Test paragraph:', testParagraph);
+  console.log('🎯 Test query:', testQuery);
 
-  // Compute GAT attention from paragraph context
-  var attentionWeights = computeGATAttention(paragraphText, queryText);
-
-  // Update the visualization with attention-based coloring
-  var visualizationInput = document.querySelector('#text-as-graph input');
-  if (visualizationInput) {
-    visualizationInput.value = queryText;
-
-    // Trigger the render function with attention weights
-    if (textAsGraphInstance && typeof textAsGraphInstance.renderWithAttention === 'function') {
-      textAsGraphInstance.renderWithAttention(attentionWeights);
-    } else if (textAsGraphInstance && typeof textAsGraphInstance.render === 'function') {
-      textAsGraphInstance.render();
-      // Apply attention coloring after render
-      applyAttentionColoring(attentionWeights, queryText);
-    } else {
-      // Fallback: trigger input event then apply coloring
-      visualizationInput.dispatchEvent(new Event('input', {
-        bubbles: true
-      }));
-      setTimeout(function () {
-        return applyAttentionColoring(attentionWeights, queryText);
-      }, 100);
-    }
-    console.log('✅ GAT visualization updated');
+  // Test Educational GAT
+  try {
+    var educationalResult = computeGATAttention(testParagraph, testQuery);
+    console.log('🎓 Educational GAT result:', educationalResult);
+  } catch (error) {
+    console.error('❌ Educational GAT error:', error);
   }
+
+  // Test Original GAT
+  try {
+    var originalResult = computeOriginalGATAttention(testParagraph, testQuery);
+    console.log('🔬 Original GAT result:', originalResult);
+  } catch (error) {
+    console.error('❌ Original GAT error:', error);
+  }
+
+  // Check for existing matrices
+  var container = d3.select('#text-as-graph');
+  var dualMatrices = container.selectAll('.dual-matrix');
+  console.log("\uD83D\uDCCA Existing dual matrices: ".concat(dualMatrices.size()));
+
+  // Try to manually trigger the dual matrix creation
+  try {
+    var educationalGAT = computeGATAttention(testParagraph, testQuery);
+    var originalGAT = computeOriginalGATAttention(testParagraph, testQuery);
+    console.log('🔧 Manually triggering createOriginalStyleDualMatrices...');
+    createOriginalStyleDualMatrices(educationalGAT, originalGAT, testQuery);
+
+    // Check again after creation
+    var newDualMatrices = container.selectAll('.dual-matrix');
+    console.log("\uD83D\uDCCA Dual matrices after creation: ".concat(newDualMatrices.size()));
+
+    // Setup hover interactions
+    console.log('🖱️ Setting up hover interactions...');
+    setupGraphToMatrixHover(educationalGAT.queryTokens);
+  } catch (error) {
+    console.error('❌ Manual creation error:', error);
+  }
+  console.log('✅ Debug test complete');
 };
+
+// Global function to update the visualization with GAT
+window.updateVisualization = /*#__PURE__*/function () {
+  var _updateVisualization = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+    var _document$querySelect;
+    var textInput, paragraphInput, queryText, paragraphText, embeddingMethod, educationalGAT, originalGAT, visualizationInput, _t;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          textInput = document.getElementById('manual-text-input');
+          paragraphInput = document.getElementById('paragraph-input');
+          if (!(!textInput || !textAsGraphInstance)) {
+            _context.n = 1;
+            break;
+          }
+          console.warn('Cannot update visualization: missing elements');
+          return _context.a(2);
+        case 1:
+          queryText = textInput.value.trim();
+          paragraphText = paragraphInput ? paragraphInput.value.trim() : '';
+          if (queryText) {
+            _context.n = 2;
+            break;
+          }
+          console.warn('Cannot update visualization: empty query text');
+          return _context.a(2);
+        case 2:
+          // Check which embedding method is selected
+          embeddingMethod = ((_document$querySelect = document.querySelector('input[name="embedding-method"]:checked')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.value) || 'synthetic';
+          console.log("\uD83E\uDDE0 Computing GAT attention with ".concat(embeddingMethod, " embeddings..."));
+          console.log('📄 Paragraph:', paragraphText.substring(0, 50) + '...');
+          console.log('🎯 Query:', queryText);
+
+          // Compute both Educational and Original GAT attention
+          if (!(embeddingMethod === 'real' && window.EmbeddingGemmaManager)) {
+            _context.n = 8;
+            break;
+          }
+          // Use EmbeddingGemma for semantic embeddings
+          console.log('🔧 Using EmbeddingGemma semantic embeddings...');
+          _context.p = 3;
+          _context.n = 4;
+          return computeEmbeddingGATAttention(paragraphText, queryText, 'educational');
+        case 4:
+          educationalGAT = _context.v;
+          _context.n = 5;
+          return computeEmbeddingGATAttention(paragraphText, queryText, 'original');
+        case 5:
+          originalGAT = _context.v;
+          _context.n = 7;
+          break;
+        case 6:
+          _context.p = 6;
+          _t = _context.v;
+          console.error('❌ EmbeddingGemma failed, falling back to synthetic:', _t);
+          educationalGAT = computeGATAttention(paragraphText, queryText);
+          originalGAT = computeOriginalGATAttention(paragraphText, queryText);
+        case 7:
+          _context.n = 9;
+          break;
+        case 8:
+          // Use synthetic embeddings (original method)
+          console.log('🎲 Using synthetic embeddings...');
+          educationalGAT = computeGATAttention(paragraphText, queryText);
+          originalGAT = computeOriginalGATAttention(paragraphText, queryText);
+        case 9:
+          console.log('📊 Educational GAT range:', educationalGAT.minAttention.toFixed(4), 'to', educationalGAT.maxAttention.toFixed(4));
+          console.log('📊 Original GAT range:', originalGAT.minAttention.toFixed(4), 'to', originalGAT.maxAttention.toFixed(4));
+
+          // Update the visualization with both attention implementations
+          visualizationInput = document.querySelector('#text-as-graph input');
+          if (visualizationInput) {
+            visualizationInput.value = queryText;
+
+            // Trigger the render function with attention weights
+            if (textAsGraphInstance && typeof textAsGraphInstance.renderWithAttention === 'function') {
+              textAsGraphInstance.renderWithAttention(attentionWeights);
+            } else if (textAsGraphInstance && typeof textAsGraphInstance.render === 'function') {
+              textAsGraphInstance.render();
+              // Apply attention coloring after render with both implementations
+              applyDualAttentionColoring(educationalGAT, originalGAT, queryText);
+            } else {
+              // Fallback: trigger input event then apply coloring
+              visualizationInput.dispatchEvent(new Event('input', {
+                bubbles: true
+              }));
+              setTimeout(function () {
+                return applyDualAttentionColoring(educationalGAT, originalGAT, queryText);
+              }, 100);
+            }
+            console.log('✅ GAT visualization updated');
+          }
+        case 10:
+          return _context.a(2);
+      }
+    }, _callee, null, [[3, 6]]);
+  }));
+  function updateVisualization() {
+    return _updateVisualization.apply(this, arguments);
+  }
+  return updateVisualization;
+}();
 
 // MathJax-based GAT attention computation
 function computeGATAttention(paragraphText, queryText) {
@@ -25380,5 +25493,555 @@ function setupAttentionHoverInteractions(attentionData) {
     d3.selectAll('#text-as-graph text').style('stroke', 'none');
   });
 }
+
+// ================== ORIGINAL GAT IMPLEMENTATION ==================
+
+/**
+ * Original GAT Implementation following Veličković et al. (2017)
+ * Key differences from educational version:
+ * 1. Includes self-attention (i==j)
+ * 2. Uses learnable weight matrix W and attention vector 'a'
+ * 3. Concatenated feature attention mechanism
+ * 4. More realistic node feature representations
+ */
+function computeOriginalGATAttention(paragraphText, queryText) {
+  console.log('🔬 Computing Original GAT attention (Veličković et al.)...');
+
+  // Tokenize inputs
+  var paragraphTokens = paragraphText ? paragraphText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(function (w) {
+    return w;
+  }) : [];
+  var queryTokens = queryText.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(function (w) {
+    return w;
+  });
+  console.log('🧬 Original GAT - Query tokens:', queryTokens);
+
+  // Use original GAT mathematical computation
+  var mathResults = computeOriginalGATMathematically(paragraphTokens, queryTokens);
+  return {
+    queryTokens: queryTokens,
+    attentionMatrix: mathResults.attentionMatrix,
+    minAttention: mathResults.minAttention,
+    maxAttention: mathResults.maxAttention,
+    computationDetails: mathResults.details,
+    paragraphTokens: paragraphTokens.slice(0, 20)
+  };
+}
+function computeOriginalGATMathematically(paragraphTokens, queryTokens) {
+  console.log('🧮 Original GAT Mathematical computation...');
+  var n = queryTokens.length;
+
+  // Initialize learnable parameters (simulated as deterministic for visualization)
+  var W = createLearnableWeightMatrix(64, 32); // Transform 64D → 32D features
+  var a = createAttentionVector(64); // 64D attention vector (2 * 32D concatenated)
+
+  // Create node features and transform with W
+  var nodeFeatures = createOriginalNodeFeatures(paragraphTokens, queryTokens);
+  var transformedFeatures = nodeFeatures.map(function (h) {
+    return matrixVectorMultiply(W, h);
+  });
+
+  // Compute attention scores using concatenated features
+  var attentionScores = createOriginalAttentionScores(transformedFeatures, a);
+  var attentionMatrix = applySoftmaxNormalization(attentionScores);
+
+  // Calculate statistics (including self-attention)
+  var minAttention = 1.0;
+  var maxAttention = 0.0;
+  attentionMatrix.forEach(function (row) {
+    row.forEach(function (val) {
+      minAttention = Math.min(minAttention, val);
+      maxAttention = Math.max(maxAttention, val);
+    });
+  });
+  console.log("\uD83D\uDCCA Original GAT range: [".concat(minAttention.toFixed(4), ", ").concat(maxAttention.toFixed(4), "]"));
+  return {
+    attentionMatrix: attentionMatrix,
+    minAttention: minAttention,
+    maxAttention: maxAttention,
+    details: {
+      features: transformedFeatures.length,
+      weightMatrix: "64x32",
+      attentionVector: "64D",
+      selfAttention: 'included'
+    }
+  };
+}
+function createLearnableWeightMatrix(inputDim, outputDim) {
+  var W = [];
+  for (var i = 0; i < outputDim; i++) {
+    var row = [];
+    for (var j = 0; j < inputDim; j++) {
+      // Simulated learnable weights (Xavier initialization)
+      var limit = Math.sqrt(6.0 / (inputDim + outputDim));
+      row.push((Math.random() * 2 - 1) * limit);
+    }
+    W.push(row);
+  }
+  return W;
+}
+function createAttentionVector(dim) {
+  var a = [];
+  // Create more diverse attention weights for better differentiation
+  for (var i = 0; i < dim; i++) {
+    // Use deterministic but varied weights based on position
+    var weight = Math.sin(i * 0.1) * 0.3 + Math.cos(i * 0.05) * 0.2;
+    a.push(weight);
+  }
+  return a;
+}
+function createOriginalNodeFeatures(paragraphTokens, queryTokens) {
+  console.log('🎯 Creating original node features...');
+  var features = [];
+  queryTokens.forEach(function (token, i) {
+    var feature = [];
+
+    // More sophisticated feature representation
+    var seed = 0;
+    for (var c = 0; c < token.length; c++) {
+      seed += token.charCodeAt(c);
+    }
+
+    // 64-dimensional features with richer representations
+    for (var d = 0; d < 64; d++) {
+      var value = 0;
+
+      // Lexical features
+      value += Math.sin(seed * (d + 1) * 0.01) * 0.3;
+      value += Math.cos(seed * (d + 1) * 0.02) * 0.2;
+
+      // Contextual features (if token appears in paragraph)
+      if (paragraphTokens.includes(token)) {
+        value += Math.sin((seed + paragraphTokens.indexOf(token)) * 0.03) * 0.2;
+      }
+
+      // Positional features
+      value += Math.sin(i * 0.1 + d * 0.05) * 0.1;
+
+      // Length-based features
+      value += token.length / 10.0 * Math.cos(d * 0.04);
+      feature.push(value);
+    }
+    features.push(feature);
+  });
+  console.log("\u2705 Created ".concat(features.length, " original features of dimension ").concat(features[0].length));
+  return features;
+}
+function matrixVectorMultiply(matrix, vector) {
+  var result = [];
+  for (var i = 0; i < matrix.length; i++) {
+    var sum = 0;
+    for (var j = 0; j < vector.length; j++) {
+      sum += matrix[i][j] * vector[j];
+    }
+    result.push(sum);
+  }
+  return result;
+}
+function createOriginalAttentionScores(transformedFeatures, attentionVector) {
+  console.log('⚡ Computing original attention scores...');
+  var n = transformedFeatures.length;
+  var scores = [];
+  for (var i = 0; i < n; i++) {
+    var row = [];
+    for (var j = 0; j < n; j++) {
+      // Concatenate transformed features: [Wh_i || Wh_j]
+      var concatenated = [].concat(_toConsumableArray(transformedFeatures[i]), _toConsumableArray(transformedFeatures[j]));
+
+      // Compute e_ij = a^T [Wh_i || Wh_j]
+      var e_ij = 0;
+      for (var k = 0; k < Math.min(attentionVector.length, concatenated.length); k++) {
+        e_ij += attentionVector[k] * concatenated[k];
+      }
+
+      // Debug logging for first computation
+      if (i === 0 && j === 0) {
+        console.log("\uD83D\uDD0D Debug: concatenated length=".concat(concatenated.length, ", attention vector length=").concat(attentionVector.length));
+        console.log("\uD83D\uDD0D Debug: e_ij raw=".concat(e_ij.toFixed(4)));
+      }
+
+      // Apply LeakyReLU activation
+      var leakyRelu = e_ij > 0 ? e_ij : 0.01 * e_ij;
+      row.push(leakyRelu);
+    }
+    scores.push(row);
+  }
+  console.log('✅ Original attention scores computed');
+  return scores;
+}
+
+// ================== DUAL VISUALIZATION FUNCTIONS ==================
+
+function applyDualAttentionColoring(educationalGAT, originalGAT, queryText) {
+  console.log('🎨 Applying dual GAT visualization...');
+
+  // Apply graph node coloring using educational GAT (for simplicity)
+  applyGraphNodeColoring(educationalGAT);
+
+  // Use original matrix update approach but create two matrices
+  createOriginalStyleDualMatrices(educationalGAT, originalGAT, queryText);
+
+  // Add bidirectional hover interactions between graph and matrices
+  setupGraphToMatrixHover(educationalGAT.queryTokens);
+}
+function applyGraphNodeColoring(attentionData) {
+  var queryTokens = attentionData.queryTokens,
+    attentionMatrix = attentionData.attentionMatrix;
+
+  // Calculate node attention strengths
+  var nodeMaxAttention = [];
+  queryTokens.forEach(function (_, i) {
+    var maxAttn = 0;
+    attentionMatrix.forEach(function (row) {
+      if (row[i] > maxAttn) maxAttn = row[i];
+    });
+    nodeMaxAttention.push(maxAttn);
+  });
+
+  // Apply to graph nodes
+  d3.selectAll('#text-as-graph text').each(function (d, i) {
+    if (i < nodeMaxAttention.length) {
+      var attention = nodeMaxAttention[i];
+      d3.select(this).style('fill', '#2563eb').style('opacity', attention);
+    }
+  });
+  d3.selectAll('#text-as-graph rect').each(function (d, i) {
+    if (i < nodeMaxAttention.length) {
+      var attention = nodeMaxAttention[i];
+      d3.select(this).style('fill', '#fbbf24').style('stroke', '#2563eb').style('opacity', attention);
+    }
+  });
+}
+function createOriginalStyleDualMatrices(educationalGAT, originalGAT, queryText) {
+  console.log('📊 Creating dual matrices in original TextAsGraph style...');
+
+  // Find the main text-as-graph container
+  var container = d3.select('#text-as-graph');
+  if (container.empty()) {
+    console.log('❌ No text-as-graph container found');
+    return;
+  }
+
+  // Remove any existing dual matrices
+  container.selectAll('.dual-matrix').remove();
+  var queryTokens = educationalGAT.queryTokens;
+  var w = 26; // Same as original TextAsGraph (20 * 1.3)
+  var matrixGap = 150; // Gap between matrices
+
+  // Calculate positions to center both matrices
+  var screenWidth = window.innerWidth;
+  var totalWidth = w * queryTokens.length * 2 + matrixGap + 120; // Space for labels
+  var startX = Math.max(50, (screenWidth - totalWidth) / 2);
+
+  // Create Educational GAT Matrix (Left - Blue)
+  var educationalMatrix = container.append('svg').attr('class', 'dual-matrix educational-matrix').style('position', 'absolute').style('top', '200px').style('left', startX + 'px').style('overflow', 'visible').attr('font-size', 12).attr('fill', 'gray');
+  createOriginalStyleMatrix(educationalMatrix, educationalGAT.attentionMatrix, queryTokens, educationalGAT.minAttention, educationalGAT.maxAttention, '🎓 Educational GAT', '#3b82f6',
+  // Blue
+  w);
+
+  // Create Original GAT Matrix (Right - Red)
+  var rightX = startX + w * queryTokens.length + matrixGap + 80; // Extra space for labels
+  var originalMatrix = container.append('svg').attr('class', 'dual-matrix original-matrix').style('position', 'absolute').style('top', '200px').style('left', rightX + 'px').style('overflow', 'visible').attr('font-size', 12).attr('fill', 'gray');
+  createOriginalStyleMatrix(originalMatrix, originalGAT.attentionMatrix, queryTokens, originalGAT.minAttention, originalGAT.maxAttention, '🔬 Original GAT', '#dc2626',
+  // Red
+  w);
+}
+function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttention, maxAttention, title, baseColor, w) {
+  // Add title below matrix
+  svg.append('text').attr('class', 'matrix-title').attr('x', queryTokens.length * w / 2).attr('y', queryTokens.length * w + 40).attr('text-anchor', 'middle').style('font-size', '14px').style('font-weight', 'bold').style('fill', '#374151').text(title);
+
+  // Create pairs for matrix cells (exactly like original TextAsGraph)
+  var words = queryTokens.map(function (word, i) {
+    return {
+      word: word,
+      i: i
+    };
+  });
+  var pairs = d3.cross(words, words);
+
+  // Add adjacency matrix rectangles with GAT attention coloring
+  svg.selectAll('rect').data(pairs).enter().append('rect').attr('class', 'adj-mat-square').attr('width', w).attr('height', w).attr('transform', function (d) {
+    return "translate(".concat(d[0].i * w, ", ").concat(d[1].i * w, ")");
+  }).attr('fill', function (d) {
+    var i = d[1].i; // row
+    var j = d[0].i; // column
+    var attention = attentionMatrix[i][j];
+    if (attention === 0) {
+      return '#f3f4f6'; // Light gray for zero values
+    } else {
+      return baseColor; // Blue or red based on GAT type
+    }
+  }).attr('opacity', function (d) {
+    var i = d[1].i; // row  
+    var j = d[0].i; // column
+    var attention = attentionMatrix[i][j];
+    if (attention === 0) {
+      return 0.1; // Very transparent for zero values
+    } else {
+      // Map attention to opacity
+      var range = maxAttention - minAttention;
+      if (range > 0) {
+        var normalizedValue = (attention - minAttention) / range;
+        return 0.2 + 0.8 * normalizedValue; // 20% to 100% opacity
+      } else {
+        return 0.6;
+      }
+    }
+  }).attr('stroke', '#aaa').attr('stroke-width', 0.2).on('mouseover', function (d) {
+    var i = d[1].i; // row
+    var j = d[0].i; // column
+
+    // Highlight this cell
+    d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+
+    // Highlight corresponding row and column labels
+    svg.selectAll('text.top').style('fill', function (labelD) {
+      return labelD.i === j ? '#000' : 'gray';
+    }).style('font-weight', function (labelD) {
+      return labelD.i === j ? 'bold' : 'normal';
+    });
+    svg.selectAll('text.side').style('fill', function (labelD) {
+      return labelD.i === i ? '#000' : 'gray';
+    }).style('font-weight', function (labelD) {
+      return labelD.i === i ? 'bold' : 'normal';
+    });
+
+    // Highlight corresponding graph nodes
+    d3.selectAll('#text-as-graph text').each(function (_, nodeIndex) {
+      if (nodeIndex === i || nodeIndex === j) {
+        d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+      }
+    });
+
+    // Show attention value in console
+    var attention = attentionMatrix[i][j];
+    console.log("\uD83D\uDD17 ".concat(title, " [").concat(i, ",").concat(j, "]: ").concat(queryTokens[i], " \u2192 ").concat(queryTokens[j], " = ").concat(attention.toFixed(3)));
+  }).on('mouseout', function (d) {
+    // Reset cell stroke
+    d3.select(this).style('stroke', '#aaa').style('stroke-width', 0.2);
+
+    // Reset labels
+    svg.selectAll('text.top, text.side').style('fill', 'gray').style('font-weight', 'normal');
+
+    // Reset graph nodes
+    d3.selectAll('#text-as-graph text').style('stroke', 'none');
+  });
+
+  // Add attention values as text overlays
+  svg.selectAll('text.attention-value').data(pairs).enter().append('text').attr('class', 'attention-value').attr('transform', function (d) {
+    return "translate(".concat(d[0].i * w + w / 2, ", ").concat(d[1].i * w + w / 2 + 4, ")");
+  }).attr('text-anchor', 'middle').style('font-size', '10px').style('font-weight', 'bold').style('pointer-events', 'none').attr('fill', function (d) {
+    var i = d[1].i;
+    var j = d[0].i;
+    var attention = attentionMatrix[i][j];
+    var range = maxAttention - minAttention;
+    var normalizedValue = range > 0 ? (attention - minAttention) / range : 0.5;
+    var opacity = 0.2 + 0.8 * normalizedValue;
+    return opacity > 0.5 ? 'white' : '#1f2937';
+  }).text(function (d) {
+    var i = d[1].i;
+    var j = d[0].i;
+    return attentionMatrix[i][j].toFixed(1);
+  });
+
+  // Add top words (rotated, exactly like original)
+  svg.selectAll('text.top').data(words).enter().append('text').attr('class', 'top').attr('transform', function (d) {
+    return "translate(".concat(d.i * w + w / 2, ", -5) rotate(-90)");
+  }).attr('text-anchor', 'start').style('font-size', '12px').style('fill', 'gray').text(function (d) {
+    return d.word;
+  });
+
+  // Add side words (exactly like original)
+  svg.selectAll('text.side').data(words).enter().append('text').attr('class', 'side').attr('transform', function (d) {
+    return "translate(-5, ".concat((d.i + .75) * w, ")");
+  }).attr('text-anchor', 'end').style('font-size', '12px').style('fill', 'gray').text(function (d) {
+    return d.word;
+  });
+}
+function addComparisonLegend(svg, x, y) {
+  var legend = svg.append('g').attr('class', 'matrix-label');
+  legend.append('text').attr('x', x).attr('y', y).style('font-size', '12px').style('font-weight', 'bold').text('Key Differences:');
+  var differences = ['• Educational: No self-attention', '• Original: Includes self-attention', '• Educational: Dot product', '• Original: Concatenated features', '• Educational: Simple embeddings', '• Original: Learnable weights W, a'];
+  differences.forEach(function (diff, i) {
+    legend.append('text').attr('x', x).attr('y', y + 20 + i * 15).style('font-size', '10px').style('fill', '#6b7280').text(diff);
+  });
+}
+function setupGraphToMatrixHover(queryTokens) {
+  console.log('🖱️ Setting up bidirectional graph-matrix hover interactions...');
+
+  // Graph nodes hover → highlight matrix rows and columns
+  d3.selectAll('#text-as-graph text').on('mouseover', function (d, i) {
+    if (i < queryTokens.length) {
+      console.log("\uD83C\uDFAF Hovering graph node ".concat(i, ": ").concat(queryTokens[i]));
+
+      // Highlight all matrix cells in row i and column i in both matrices
+      d3.selectAll('.dual-matrix rect').each(function (rectD) {
+        var row = rectD[1].i;
+        var col = rectD[0].i;
+        if (row === i || col === i) {
+          d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+        }
+      });
+
+      // Highlight labels in both matrices
+      d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').each(function (labelD) {
+        if (labelD.i === i) {
+          d3.select(this).style('fill', '#000').style('font-weight', 'bold');
+        }
+      });
+
+      // Highlight this graph node
+      d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+    }
+  }).on('mouseout', function () {
+    // Reset everything
+    d3.selectAll('.dual-matrix rect').style('stroke', '#aaa').style('stroke-width', 0.2);
+    d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').style('fill', 'gray').style('font-weight', 'normal');
+    d3.selectAll('#text-as-graph text').style('stroke', 'none');
+  });
+}
+
+// Manual debug function for testing dual GAT implementation
+function debugDualGAT() {
+  return _debugDualGAT.apply(this, arguments);
+} // Utility function for tokenizing text (used by EmbeddingGemma)
+function _debugDualGAT() {
+  _debugDualGAT = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+    var useEmbedding,
+      testParagraph,
+      testQuery,
+      educationalResult,
+      originalResult,
+      _args2 = arguments,
+      _t2;
+    return _regenerator().w(function (_context2) {
+      while (1) switch (_context2.p = _context2.n) {
+        case 0:
+          useEmbedding = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : false;
+          console.log("\uD83E\uDDEA Manual GAT Test ".concat(useEmbedding ? 'with EmbeddingGemma' : 'with synthetic embeddings'));
+          testParagraph = 'Neural networks are powerful tools. Graph attention mechanisms capture relationships.';
+          testQuery = 'graph attention mechanisms';
+          console.log('📝 Test paragraph:', testParagraph);
+          console.log('🎯 Test query:', testQuery);
+          if (!(useEmbedding && window.EmbeddingGemmaManager)) {
+            _context2.n = 6;
+            break;
+          }
+          console.log('🔬 Computing with EmbeddingGemma...');
+          _context2.p = 1;
+          _context2.n = 2;
+          return computeEmbeddingGATAttention(testParagraph, testQuery, 'educational');
+        case 2:
+          educationalResult = _context2.v;
+          _context2.n = 3;
+          return computeEmbeddingGATAttention(testParagraph, testQuery, 'original');
+        case 3:
+          originalResult = _context2.v;
+          _context2.n = 5;
+          break;
+        case 4:
+          _context2.p = 4;
+          _t2 = _context2.v;
+          console.error('❌ EmbeddingGemma failed, falling back to synthetic:', _t2);
+          educationalResult = computeGATAttention(testParagraph, testQuery);
+          originalResult = computeOriginalGATAttention(testParagraph, testQuery);
+        case 5:
+          _context2.n = 7;
+          break;
+        case 6:
+          console.log('🧠 Computing Educational GAT (synthetic)...');
+          educationalResult = computeGATAttention(testParagraph, testQuery);
+          console.log('🎓 Educational GAT result:', educationalResult);
+          console.log('🔬 Computing Original GAT (synthetic)...');
+          originalResult = computeOriginalGATAttention(testParagraph, testQuery);
+          console.log('🔬 Original GAT result:', originalResult);
+        case 7:
+          console.log('📊 Creating dual matrices...');
+          createOriginalStyleDualMatrices(educationalResult, originalResult, testQuery);
+          console.log('✅ Manual test complete - dual matrices should be visible');
+          return _context2.a(2, {
+            educational: educationalResult,
+            original: originalResult,
+            method: useEmbedding ? 'EmbeddingGemma' : 'Synthetic',
+            status: 'completed'
+          });
+      }
+    }, _callee2, null, [[1, 4]]);
+  }));
+  return _debugDualGAT.apply(this, arguments);
+}
+function tokenizeText(text) {
+  return text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(function (w) {
+    return w;
+  });
+}
+
+// EmbeddingGemma-based GAT computation
+function computeEmbeddingGATAttention(_x, _x2) {
+  return _computeEmbeddingGATAttention.apply(this, arguments);
+} // Make function globally available
+function _computeEmbeddingGATAttention() {
+  _computeEmbeddingGATAttention = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(paragraphText, queryText) {
+    var type,
+      tokens,
+      context,
+      embeddingResult,
+      i,
+      minAttention,
+      maxAttention,
+      _i,
+      j,
+      attention,
+      _args3 = arguments;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.n) {
+        case 0:
+          type = _args3.length > 2 && _args3[2] !== undefined ? _args3[2] : 'educational';
+          console.log("\uD83D\uDD2C Computing ".concat(type, " GAT with EmbeddingGemma..."));
+          if (window.EmbeddingGemmaManager) {
+            _context3.n = 1;
+            break;
+          }
+          throw new Error('EmbeddingGemmaManager not available');
+        case 1:
+          tokens = tokenizeText(queryText);
+          context = paragraphText ? 'document' : 'query'; // Use EmbeddingGemma to create attention matrix
+          _context3.n = 2;
+          return window.EmbeddingGemmaManager.createEmbeddingAttentionMatrix(tokens, context);
+        case 2:
+          embeddingResult = _context3.v;
+          if (type === 'educational') {
+            // Educational: exclude self-attention (set diagonal to 0)
+            for (i = 0; i < tokens.length; i++) {
+              embeddingResult.attentionMatrix[i][i] = 0;
+            }
+
+            // Recalculate min/max after removing self-attention
+            minAttention = 1.0;
+            maxAttention = 0.0;
+            for (_i = 0; _i < tokens.length; _i++) {
+              for (j = 0; j < tokens.length; j++) {
+                attention = embeddingResult.attentionMatrix[_i][j];
+                if (attention > 0) {
+                  if (attention < minAttention) minAttention = attention;
+                  if (attention > maxAttention) maxAttention = attention;
+                }
+              }
+            }
+            embeddingResult.minAttention = minAttention;
+            embeddingResult.maxAttention = maxAttention;
+          }
+
+          // Add computation details
+          embeddingResult.computationDetails.type = type;
+          embeddingResult.computationDetails.source = 'EmbeddingGemma';
+          console.log("\u2728 ".concat(type, " EmbeddingGAT computed: ").concat(embeddingResult.minAttention.toFixed(3), "-").concat(embeddingResult.maxAttention.toFixed(3)));
+          return _context3.a(2, embeddingResult);
+      }
+    }, _callee3);
+  }));
+  return _computeEmbeddingGATAttention.apply(this, arguments);
+}
+window.debugDualGAT = debugDualGAT;
 },{"./d3-conventions":"d3-conventions.js","./text-as-graph-v2":"text-as-graph-v2.ts"}]},{},["index.js"], null)
 //# sourceMappingURL=/TextGraph.e31bb0bc.js.map
