@@ -119,6 +119,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   return newRequire;
 })({"embedding-gemma-demo.js":[function(require,module,exports) {
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -228,9 +234,80 @@ var EmbeddingGemmaManager = /*#__PURE__*/function () {
             case 1:
               startTime = performance.now();
               console.log("\uD83D\uDD04 TextGraph: Generating ".concat(taskType, " embeddings for ").concat(texts.length, " texts (Demo)..."));
+              console.log("\uD83D\uDCDD TextGraph: Input texts: [".concat(texts.map(function (t) {
+                return "\"".concat(t, "\"");
+              }).join(', '), "]"));
               _context3.p = 2;
-              embeddings = texts.map(function (text) {
-                return _this.generateSemanticEmbedding(text, taskType);
+              embeddings = texts.map(function (text, index) {
+                var embedding = _this.generateSemanticEmbedding(text, taskType);
+
+                // Log detailed embedding information
+                console.log("\uD83E\uDDE0 TextGraph: Generated embedding ".concat(index + 1, "/").concat(texts.length, " for \"").concat(text, "\""));
+                console.log("\uD83D\uDCCA TextGraph: Embedding dimension: ".concat(embedding.length, "D (").concat(taskType, " task)"));
+                console.log("\uD83D\uDD22 TextGraph: First 10 values: [".concat(embedding.slice(0, 10).map(function (v) {
+                  return v.toFixed(4);
+                }).join(', '), "...]"));
+                console.log("\uD83D\uDCC8 TextGraph: Value range: ".concat(Math.min.apply(Math, _toConsumableArray(embedding)).toFixed(4), " to ").concat(Math.max.apply(Math, _toConsumableArray(embedding)).toFixed(4)));
+                console.log("\uD83C\uDFAF TextGraph: Vector magnitude: ".concat(Math.sqrt(embedding.reduce(function (sum, val) {
+                  return sum + val * val;
+                }, 0)).toFixed(4)));
+
+                // Log complete 768D embedding vector
+                console.log("\uD83D\uDCCB TextGraph: COMPLETE 768D EMBEDDING for \"".concat(text, "\":"));
+                console.log("\uD83D\uDD22 Full vector: [".concat(embedding.map(function (v) {
+                  return v.toFixed(6);
+                }).join(', '), "]"));
+
+                // Additional statistics
+                var positiveCount = embedding.filter(function (v) {
+                  return v > 0;
+                }).length;
+                var negativeCount = embedding.filter(function (v) {
+                  return v < 0;
+                }).length;
+                var zeroCount = embedding.filter(function (v) {
+                  return v === 0;
+                }).length;
+                var mean = embedding.reduce(function (sum, val) {
+                  return sum + val;
+                }, 0) / embedding.length;
+                var variance = embedding.reduce(function (sum, val) {
+                  return sum + Math.pow(val - mean, 2);
+                }, 0) / embedding.length;
+                var stdDev = Math.sqrt(variance);
+                console.log("\uD83D\uDCCA TextGraph: Vector statistics:");
+                console.log("   \u2022 Positive values: ".concat(positiveCount, "/768 (").concat((positiveCount / 768 * 100).toFixed(1), "%)"));
+                console.log("   \u2022 Negative values: ".concat(negativeCount, "/768 (").concat((negativeCount / 768 * 100).toFixed(1), "%)"));
+                console.log("   \u2022 Zero values: ".concat(zeroCount, "/768 (").concat((zeroCount / 768 * 100).toFixed(1), "%)"));
+                console.log("   \u2022 Mean: ".concat(mean.toFixed(6)));
+                console.log("   \u2022 Standard deviation: ".concat(stdDev.toFixed(6)));
+                console.log("   \u2022 Variance: ".concat(variance.toFixed(6)));
+
+                // Show embedding distribution by ranges
+                var ranges = {
+                  'very_negative': embedding.filter(function (v) {
+                    return v < -0.5;
+                  }).length,
+                  'negative': embedding.filter(function (v) {
+                    return v >= -0.5 && v < -0.1;
+                  }).length,
+                  'near_zero': embedding.filter(function (v) {
+                    return v >= -0.1 && v <= 0.1;
+                  }).length,
+                  'positive': embedding.filter(function (v) {
+                    return v > 0.1 && v <= 0.5;
+                  }).length,
+                  'very_positive': embedding.filter(function (v) {
+                    return v > 0.5;
+                  }).length
+                };
+                console.log("\uD83D\uDCC8 TextGraph: Value distribution:");
+                console.log("   \u2022 Very negative (< -0.5): ".concat(ranges.very_negative, " values"));
+                console.log("   \u2022 Negative (-0.5 to -0.1): ".concat(ranges.negative, " values"));
+                console.log("   \u2022 Near zero (-0.1 to 0.1): ".concat(ranges.near_zero, " values"));
+                console.log("   \u2022 Positive (0.1 to 0.5): ".concat(ranges.positive, " values"));
+                console.log("   \u2022 Very positive (> 0.5): ".concat(ranges.very_positive, " values"));
+                return embedding;
               });
               endTime = performance.now();
               embeddingTime = endTime - startTime;
@@ -273,8 +350,20 @@ var EmbeddingGemmaManager = /*#__PURE__*/function () {
         semanticSeed += cleanText.charCodeAt(i) * (i + 1);
       }
 
+      // Calculate semantic features for detailed logging
+      var vowelCount = (cleanText.match(/[aeiou]/g) || []).length;
+      var vowelDensity = vowelCount / cleanText.length;
+      var wordHash = this.hashText(cleanText);
+
       // Task-specific bias
       var taskBias = taskType === 'query' ? 0.15 : -0.15;
+      console.log("\uD83D\uDD0D TextGraph: Semantic analysis for \"".concat(text, "\":"));
+      console.log("  \uD83D\uDCDD Clean text: \"".concat(cleanText, "\" (").concat(cleanText.length, " chars)"));
+      console.log("  \uD83E\uDDEE Semantic seed: ".concat(semanticSeed));
+      console.log("  \uD83D\uDD24 Vowel count: ".concat(vowelCount, "/").concat(cleanText.length, " (density: ").concat(vowelDensity.toFixed(4), ")"));
+      console.log("  \uD83C\uDFF7\uFE0F Word hash: ".concat(wordHash));
+      console.log("  \uD83C\uDFAF Task type: ".concat(taskType, " (bias: ").concat(taskBias > 0 ? '+' : '').concat(taskBias, ")"));
+      console.log("  \uD83E\uDDE0 Generating 768D semantic embedding...");
 
       // Generate embedding dimensions with semantic patterns
       for (var d = 0; d < 768; d++) {
@@ -288,20 +377,23 @@ var EmbeddingGemmaManager = /*#__PURE__*/function () {
         value += Math.sin(cleanText.length * 0.1 * (d + 1)) * 0.1;
 
         // Vowel density (semantic richness)
-        var vowelCount = (cleanText.match(/[aeiou]/g) || []).length;
-        var vowelDensity = vowelCount / cleanText.length;
         value += Math.sin(vowelDensity * Math.PI * (d + 1)) * 0.1;
 
         // Task-specific adjustment
         value += taskBias * Math.cos((d + 1) * 0.01);
 
         // Semantic clustering (similar words cluster together)
-        var wordHash = this.hashText(cleanText);
         value += Math.sin(wordHash * 0.0001 * (d + 1)) * 0.15;
 
         // Normalize to reasonable range
         embedding[d] = Math.tanh(value);
       }
+
+      // Log a sample of the generated embedding
+      console.log("  \u2705 Generated semantic features: base_signal + length_influence + vowel_density + task_bias + clustering");
+      console.log("  \uD83D\uDCCA Sample embedding values (dims 0-5): [".concat(embedding.slice(0, 6).map(function (v) {
+        return v.toFixed(4);
+      }).join(', '), "]"));
       return embedding;
     }
 
@@ -408,23 +500,39 @@ var EmbeddingGemmaManager = /*#__PURE__*/function () {
               attentionMatrix = [];
               minAttention = 1.0;
               maxAttention = -1.0;
+              console.log("\uD83D\uDD22 TextGraph: Computing pairwise cosine similarities...");
               for (i = 0; i < tokens.length; i++) {
                 row = [];
+                console.log("\uD83D\uDCCA TextGraph: Computing similarities for \"".concat(tokens[i], "\" (token ").concat(i + 1, "/").concat(tokens.length, ")"));
                 for (j = 0; j < tokens.length; j++) {
                   if (i === j) {
                     // Self-attention: set to 0 for educational GAT
                     row.push(0);
+                    console.log("  \u21B3 \"".concat(tokens[i], "\" \u2194 \"").concat(tokens[j], "\": self-attention = 0.0000 (diagonal)"));
                   } else {
                     similarity = this.calculateCosineSimilarity(embeddings[i], embeddings[j]); // Convert similarity from [-1,1] to [0,1] range
                     attention = (similarity + 1) / 2;
                     row.push(attention);
+                    console.log("  \u21B3 \"".concat(tokens[i], "\" \u2194 \"").concat(tokens[j], "\": similarity = ").concat(similarity.toFixed(4), ", attention = ").concat(attention.toFixed(4)));
                     if (attention > maxAttention) maxAttention = attention;
                     if (attention < minAttention && attention > 0) minAttention = attention;
                   }
                 }
                 attentionMatrix.push(row);
               }
-              console.log("\uD83D\uDCCA TextGraph: EmbeddingGemma attention matrix created (".concat(minAttention.toFixed(3), " - ").concat(maxAttention.toFixed(3), ") (Demo)"));
+              console.log("\uD83D\uDCCA TextGraph: EmbeddingGemma attention matrix completed!");
+              console.log("\uD83D\uDCC8 TextGraph: Attention range: ".concat(minAttention.toFixed(4), " to ").concat(maxAttention.toFixed(4)));
+              console.log("\uD83C\uDFAF TextGraph: Matrix size: ".concat(tokens.length, "\xD7").concat(tokens.length, " (").concat(tokens.length * tokens.length, " total cells)"));
+
+              // Log the complete attention matrix
+              console.log("\uD83D\uDCCA TextGraph: Complete attention matrix:");
+              console.table(attentionMatrix.map(function (row, i) {
+                var rowObj = {};
+                tokens.forEach(function (token, j) {
+                  rowObj[token] = row[j].toFixed(4);
+                });
+                return rowObj;
+              }));
               return _context5.a(2, {
                 queryTokens: tokens,
                 attentionMatrix: attentionMatrix,

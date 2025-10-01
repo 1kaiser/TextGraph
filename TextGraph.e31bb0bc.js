@@ -24653,7 +24653,9 @@ var TextAsGraph = /** @class */function () {
   };
   TextAsGraph.prototype.makeAdjMat = function (words) {
     var _this = this;
+    // DISABLED: Central matrix removed - using dual GAT matrices instead
     this.adjMatSel.selectAll('*').remove();
+    return; // Exit early to prevent central matrix creation
     this.adjMatSel.attr('font-size', 12).attr('fill', 'gray');
     var pairs = d3.cross(words, words);
     var w = 26; // 20 * 1.3 = 26
@@ -25792,9 +25794,9 @@ function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttenti
     var j = d[0].i; // column
 
     // Highlight this cell
-    d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+    d3.select(this).style('stroke', '#000').style('stroke-width', 3);
 
-    // Highlight corresponding row and column labels
+    // Highlight corresponding row and column labels IN THIS MATRIX
     svg.selectAll('text.top').style('fill', function (labelD) {
       return labelD.i === j ? '#000' : 'gray';
     }).style('font-weight', function (labelD) {
@@ -25806,10 +25808,33 @@ function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttenti
       return labelD.i === i ? 'bold' : 'normal';
     });
 
+    // ✨ NEW: Highlight corresponding cell in THE OTHER MATRIX
+    d3.selectAll('.dual-matrix rect').each(function (otherD) {
+      // Skip if this is the same matrix
+      var thisMatrix = d3.select(this.parentNode);
+      if (thisMatrix.node() === svg.node()) return;
+      var otherRow = otherD[1].i;
+      var otherCol = otherD[0].i;
+
+      // Highlight the same [i,j] cell in the other matrix
+      if (otherRow === i && otherCol === j) {
+        d3.select(this).style('stroke', '#ff6b00').style('stroke-width', 3);
+      }
+    });
+
+    // ✨ NEW: Highlight labels in THE OTHER MATRIX
+    d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').each(function (labelD) {
+      var thisMatrix = d3.select(this.parentNode);
+      if (thisMatrix.node() === svg.node()) return;
+      if (labelD.i === i || labelD.i === j) {
+        d3.select(this).style('fill', '#ff6b00').style('font-weight', 'bold');
+      }
+    });
+
     // Highlight corresponding graph nodes
     d3.selectAll('#text-as-graph text').each(function (_, nodeIndex) {
       if (nodeIndex === i || nodeIndex === j) {
-        d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+        d3.select(this).style('stroke', '#000').style('stroke-width', 3).style('fill', '#1e40af');
       }
     });
 
