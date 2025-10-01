@@ -2,6 +2,15 @@
 
 Complete GAT (Graph Attention Networks) visualization system with **dual implementation comparison**: Educational GAT vs Original GAT side-by-side with mathematical computation and interactive transparency-based attention mapping.
 
+## 🆕 **LATEST UPDATE: Enhanced 3-Way Hover Interconnectedness (Oct 2025)**
+
+### Recent Changes
+- ✅ **Central Matrix Removed**: Cleaned layout from 3 matrices to 2 (Educational + Original GAT only)
+- ✅ **Cross-Matrix Highlighting**: Hovering one matrix cell highlights corresponding cell in other matrix (orange)
+- ✅ **Enhanced Graph-Matrix Linking**: Hovering graph nodes highlights rows/columns in BOTH matrices (blue)
+- ✅ **Bidirectional Reset**: Smooth cleanup of all highlights on mouseout
+- ✅ **Color Coding System**: Orange (#ff6b00) for cross-matrix, Blue (#2563eb) for graph-initiated
+
 ## 🆕 **MAJOR UPDATE: EmbeddingGemma Integration + Dual GAT System (Sep 2025)**
 
 TextGraph now features **advanced semantic embeddings** with dual implementation comparison:

@@ -25,27 +25,29 @@ Access: http://localhost:1234
 
 ## 🆕 **Dual GAT Implementation** (New Feature!)
 
-TextGraph now includes **side-by-side comparison** of Educational GAT vs Original GAT implementations:
+TextGraph now includes **side-by-side comparison** of Educational GAT vs Original GAT implementations with **enhanced 3-way interconnectedness**:
 
 ### 🎓 Educational GAT (Left Matrix - Blue)
 - **Purpose**: Learning and visualization
-- **Self-attention**: Excluded (set to 0)  
+- **Self-attention**: Excluded (set to 0)
 - **Attention formula**: Simple dot product Q·K
 - **Features**: Deterministic embeddings
 - **Color**: Blue matrix cells
 
-### 🔬 Original GAT (Right Matrix - Red) 
+### 🔬 Original GAT (Right Matrix - Red)
 - **Purpose**: Research accuracy (Veličković et al. 2017)
 - **Self-attention**: Included in computation
 - **Attention formula**: a^T[Wh_i || Wh_j] (concatenated features)
 - **Features**: Learnable W matrix (64×32) + attention vector a (64D)
 - **Color**: Red matrix cells
 
-### 📊 Interactive Comparison
-- **Hover any matrix cell** → See both Educational + Original values in console
-- **Real-time computation** → Both algorithms run simultaneously  
+### 📊 Interactive Comparison with 3-Way Highlighting ✨ NEW
+- **Hover any matrix cell** → Highlights corresponding cell in **other matrix** (orange) + **graph nodes** (blue)
+- **Hover any graph node** → Highlights **rows/columns in BOTH matrices** simultaneously (blue)
+- **Real-time computation** → Both algorithms run in parallel
 - **Legend display** → Key differences explained on-screen
 - **Performance comparison** → Console shows attention value ranges
+- **Central matrix removed** → Clean 2-matrix layout (was 3 matrices before)
 
 ## 📱 Interface
 
@@ -159,15 +161,23 @@ Users can switch between embedding methods via radio buttons:
 - **Arrow routing**: Straight arrows for clean connections
 - **Color coding**: Blue for connections, gray for self-attention
 
-## 🎯 Hover Interactions
+## 🎯 Enhanced 3-Way Hover Interconnectedness ✨ NEW
 
-### Graph Node Hover
-- Highlights corresponding **matrix row and column**
-- Shows attention weights in console tooltip
+### Matrix Cell Hover → Cross-Matrix + Graph Highlighting
+- **Primary**: Highlights **this cell** with black stroke (3px)
+- **Cross-Matrix**: Highlights **same cell in other matrix** with orange stroke (🟠 #ff6b00)
+- **Graph**: Highlights **corresponding word nodes** with blue fill
+- **Labels**: Highlights **row/column labels** in both matrices
 
-### Matrix Cell Hover  
-- Highlights corresponding **graph nodes**
-- Displays connection strength and interpretation
+### Graph Node Hover → Dual Matrix Highlighting
+- **Graph**: Highlights **this word node** with blue stroke (3px)
+- **Both Matrices**: Highlights **entire row and column** in Educational + Original matrices
+- **Visual**: Blue highlighting (🔵 #2563eb) shows unified attention patterns
+- **Effect**: See word's attention relationships across both GAT implementations simultaneously
+
+### Bidirectional Reset
+- **Automatic cleanup**: All highlights clear on mouseout
+- **Smooth transitions**: No visual artifacts between hover states
 
 ## 📊 Dual GAT Technical Implementation
 

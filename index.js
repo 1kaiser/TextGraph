@@ -1124,41 +1124,77 @@ function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttenti
     .on('mouseover', function(d) {
       const i = d[1].i; // row
       const j = d[0].i; // column
-      
+
       // Highlight this cell
-      d3.select(this).style('stroke', '#000').style('stroke-width', 2);
-      
-      // Highlight corresponding row and column labels
+      d3.select(this).style('stroke', '#000').style('stroke-width', 3);
+
+      // Highlight corresponding row and column labels IN THIS MATRIX
       svg.selectAll('text.top')
         .style('fill', (labelD) => labelD.i === j ? '#000' : 'gray')
         .style('font-weight', (labelD) => labelD.i === j ? 'bold' : 'normal');
-        
+
       svg.selectAll('text.side')
         .style('fill', (labelD) => labelD.i === i ? '#000' : 'gray')
         .style('font-weight', (labelD) => labelD.i === i ? 'bold' : 'normal');
-      
+
+      // ✨ NEW: Highlight corresponding cell in THE OTHER MATRIX
+      d3.selectAll('.dual-matrix rect').each(function(otherD) {
+        // Skip if this is the same matrix
+        const thisMatrix = d3.select(this.parentNode);
+        if (thisMatrix.node() === svg.node()) return;
+
+        const otherRow = otherD[1].i;
+        const otherCol = otherD[0].i;
+
+        // Highlight the same [i,j] cell in the other matrix
+        if (otherRow === i && otherCol === j) {
+          d3.select(this).style('stroke', '#ff6b00').style('stroke-width', 3);
+        }
+      });
+
+      // ✨ NEW: Highlight labels in THE OTHER MATRIX
+      d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').each(function(labelD) {
+        const thisMatrix = d3.select(this.parentNode);
+        if (thisMatrix.node() === svg.node()) return;
+
+        if (labelD.i === i || labelD.i === j) {
+          d3.select(this).style('fill', '#ff6b00').style('font-weight', 'bold');
+        }
+      });
+
       // Highlight corresponding graph nodes
       d3.selectAll('#text-as-graph text').each(function(_, nodeIndex) {
         if (nodeIndex === i || nodeIndex === j) {
-          d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+          d3.select(this).style('stroke', '#000').style('stroke-width', 3).style('fill', '#1e40af');
         }
       });
-      
+
       // Show attention value in console
       const attention = attentionMatrix[i][j];
       console.log(`🔗 ${title} [${i},${j}]: ${queryTokens[i]} → ${queryTokens[j]} = ${attention.toFixed(3)}`);
     })
     .on('mouseout', function(d) {
-      // Reset cell stroke
+      // Reset THIS cell stroke
       d3.select(this).style('stroke', '#aaa').style('stroke-width', 0.2);
-      
-      // Reset labels
+
+      // Reset THIS matrix labels
       svg.selectAll('text.top, text.side')
         .style('fill', 'gray')
         .style('font-weight', 'normal');
-        
-      // Reset graph nodes
-      d3.selectAll('#text-as-graph text').style('stroke', 'none');
+
+      // ✨ NEW: Reset ALL other matrix cells and labels
+      d3.selectAll('.dual-matrix rect')
+        .style('stroke', '#aaa')
+        .style('stroke-width', 0.2);
+
+      d3.selectAll('.dual-matrix text.top, .dual-matrix text.side')
+        .style('fill', 'gray')
+        .style('font-weight', 'normal');
+
+      // Reset graph nodes (restore original fill color)
+      d3.selectAll('#text-as-graph text')
+        .style('stroke', 'none')
+        .style('fill', '#000');
     });
     
   // Add attention values as text overlays
@@ -1248,32 +1284,41 @@ function setupGraphToMatrixHover(queryTokens) {
   d3.selectAll('#text-as-graph text').on('mouseover', function(d, i) {
     if (i < queryTokens.length) {
       console.log(`🎯 Hovering graph node ${i}: ${queryTokens[i]}`);
-      
-      // Highlight all matrix cells in row i and column i in both matrices
+
+      // ✨ ENHANCED: Highlight all matrix cells in row i and column i in BOTH matrices
+      // with different highlighting to distinguish the two matrices
       d3.selectAll('.dual-matrix rect').each(function(rectD) {
         const row = rectD[1].i;
         const col = rectD[0].i;
-        
+
         if (row === i || col === i) {
-          d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+          // Use thicker stroke and orange color for cross-matrix highlighting
+          d3.select(this).style('stroke', '#2563eb').style('stroke-width', 3);
         }
       });
-      
-      // Highlight labels in both matrices
+
+      // ✨ ENHANCED: Highlight labels in BOTH matrices with blue
       d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').each(function(labelD) {
         if (labelD.i === i) {
-          d3.select(this).style('fill', '#000').style('font-weight', 'bold');
+          d3.select(this).style('fill', '#2563eb').style('font-weight', 'bold');
         }
       });
-      
-      // Highlight this graph node
-      d3.select(this).style('stroke', '#000').style('stroke-width', 2);
+
+      // ✨ ENHANCED: Highlight this graph node with thicker stroke
+      d3.select(this)
+        .style('stroke', '#2563eb')
+        .style('stroke-width', 3)
+        .style('fill', '#1e40af')
+        .style('font-weight', 'bold');
     }
   }).on('mouseout', function() {
     // Reset everything
     d3.selectAll('.dual-matrix rect').style('stroke', '#aaa').style('stroke-width', 0.2);
     d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').style('fill', 'gray').style('font-weight', 'normal');
-    d3.selectAll('#text-as-graph text').style('stroke', 'none');
+    d3.selectAll('#text-as-graph text')
+      .style('stroke', 'none')
+      .style('fill', '#000')
+      .style('font-weight', 'normal');
   });
 }
 

@@ -247,7 +247,9 @@ export class TextAsGraph {
   }
 
   private makeAdjMat(words) {
+    // DISABLED: Central matrix removed - using dual GAT matrices instead
     this.adjMatSel.selectAll('*').remove();
+    return; // Exit early to prevent central matrix creation
 
     this.adjMatSel
       .attr('font-size', 12)
