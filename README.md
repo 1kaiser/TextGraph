@@ -42,12 +42,13 @@ TextGraph now includes **side-by-side comparison** of Educational GAT vs Origina
 - **Color**: Red matrix cells
 
 ### 📊 Interactive Comparison with 3-Way Highlighting ✨ NEW
-- **Hover any matrix cell** → Highlights corresponding cell in **other matrix** (orange) + **graph nodes** (blue)
+- **Hover any matrix cell** → Highlights corresponding cell in **other matrix** (black, consistent) + **labels** (black+bold) + **graph nodes** (blue)
 - **Hover any graph node** → Highlights **rows/columns in BOTH matrices** simultaneously (blue)
 - **Real-time computation** → Both algorithms run in parallel
 - **Legend display** → Key differences explained on-screen
 - **Performance comparison** → Console shows attention value ranges
 - **Central matrix removed** → Clean 2-matrix layout (was 3 matrices before)
+- **Consistent highlighting** → Same visual feedback mechanism across both Educational and Original GAT matrices
 
 ## 📱 Interface
 
@@ -163,11 +164,12 @@ Users can switch between embedding methods via radio buttons:
 
 ## 🎯 Enhanced 3-Way Hover Interconnectedness ✨ NEW
 
-### Matrix Cell Hover → Cross-Matrix + Graph Highlighting
-- **Primary**: Highlights **this cell** with black stroke (3px)
-- **Cross-Matrix**: Highlights **same cell in other matrix** with orange stroke (🟠 #ff6b00)
-- **Graph**: Highlights **corresponding word nodes** with blue fill
-- **Labels**: Highlights **row/column labels** in both matrices
+### Matrix Cell Hover → Consistent Cross-Matrix + Graph Highlighting
+- **Primary Cell**: Highlights **this cell** with black stroke (3px)
+- **Cross-Matrix Cell**: Highlights **same [row,col] cell in other matrix** with **black stroke** (3px) - **consistent highlighting**
+- **Labels in Both Matrices**: **Row and column labels** become **black + bold** in both Educational and Original matrices
+- **Graph Nodes**: Highlights **corresponding word nodes** (row and column words) with blue fill
+- **Visual Consistency**: Same highlighting mechanism across both matrices - when you hover cell [2,3] in Educational GAT, cell [2,3] in Original GAT gets the same black highlight
 
 ### Graph Node Hover → Dual Matrix Highlighting
 - **Graph**: Highlights **this word node** with blue stroke (3px)

@@ -6,10 +6,10 @@ Complete GAT (Graph Attention Networks) visualization system with **dual impleme
 
 ### Recent Changes
 - ✅ **Central Matrix Removed**: Cleaned layout from 3 matrices to 2 (Educational + Original GAT only)
-- ✅ **Cross-Matrix Highlighting**: Hovering one matrix cell highlights corresponding cell in other matrix (orange)
+- ✅ **Consistent Cross-Matrix Highlighting**: Hovering one matrix cell highlights corresponding cell in other matrix with **same black stroke** + **bold labels**
 - ✅ **Enhanced Graph-Matrix Linking**: Hovering graph nodes highlights rows/columns in BOTH matrices (blue)
 - ✅ **Bidirectional Reset**: Smooth cleanup of all highlights on mouseout
-- ✅ **Color Coding System**: Orange (#ff6b00) for cross-matrix, Blue (#2563eb) for graph-initiated
+- ✅ **Unified Visual Feedback**: Same highlighting mechanism (black stroke, bold labels) works across both matrices for consistency
 
 ## 🆕 **MAJOR UPDATE: EmbeddingGemma Integration + Dual GAT System (Sep 2025)**
 

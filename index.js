@@ -1137,7 +1137,7 @@ function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttenti
         .style('fill', (labelD) => labelD.i === i ? '#000' : 'gray')
         .style('font-weight', (labelD) => labelD.i === i ? 'bold' : 'normal');
 
-      // ✨ NEW: Highlight corresponding cell in THE OTHER MATRIX
+      // ✨ ENHANCED: Highlight corresponding cell in THE OTHER MATRIX (same style)
       d3.selectAll('.dual-matrix rect').each(function(otherD) {
         // Skip if this is the same matrix
         const thisMatrix = d3.select(this.parentNode);
@@ -1146,19 +1146,20 @@ function createOriginalStyleMatrix(svg, attentionMatrix, queryTokens, minAttenti
         const otherRow = otherD[1].i;
         const otherCol = otherD[0].i;
 
-        // Highlight the same [i,j] cell in the other matrix
+        // Highlight the same [i,j] cell in the other matrix (BLACK, consistent with primary)
         if (otherRow === i && otherCol === j) {
-          d3.select(this).style('stroke', '#ff6b00').style('stroke-width', 3);
+          d3.select(this).style('stroke', '#000').style('stroke-width', 3);
         }
       });
 
-      // ✨ NEW: Highlight labels in THE OTHER MATRIX
+      // ✨ ENHANCED: Highlight labels in THE OTHER MATRIX (same style)
       d3.selectAll('.dual-matrix text.top, .dual-matrix text.side').each(function(labelD) {
         const thisMatrix = d3.select(this.parentNode);
         if (thisMatrix.node() === svg.node()) return;
 
+        // Highlight row and column labels (BLACK and BOLD, consistent with primary)
         if (labelD.i === i || labelD.i === j) {
-          d3.select(this).style('fill', '#ff6b00').style('font-weight', 'bold');
+          d3.select(this).style('fill', '#000').style('font-weight', 'bold');
         }
       });
 
