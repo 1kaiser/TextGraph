@@ -1280,7 +1280,7 @@ function addComparisonLegend(svg, x, y) {
 
 function setupGraphToMatrixHover(queryTokens) {
   console.log('🖱️ Setting up bidirectional graph-matrix hover interactions...');
-  
+
   // Graph nodes hover → highlight matrix rows and columns
   d3.selectAll('#text-as-graph text').on('mouseover', function(d, i) {
     if (i < queryTokens.length) {
@@ -1320,6 +1320,23 @@ function setupGraphToMatrixHover(queryTokens) {
       .style('stroke', 'none')
       .style('fill', '#000')
       .style('font-weight', 'normal');
+  }).on('click', function(d, i) {
+    // ✨ NEW: Copy node text to clipboard on click
+    if (i < queryTokens.length) {
+      const nodeText = queryTokens[i];
+      navigator.clipboard.writeText(nodeText).then(() => {
+        console.log(`📋 Copied to clipboard: "${nodeText}"`);
+
+        // Visual feedback: flash the node
+        d3.select(this)
+          .style('fill', '#10b981')
+          .transition()
+          .duration(300)
+          .style('fill', '#000');
+      }).catch(err => {
+        console.error('❌ Failed to copy to clipboard:', err);
+      });
+    }
   });
 }
 
