@@ -13,7 +13,7 @@
       MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     </script>
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  <script type="module" crossorigin src="./assets/index-De-xpWO-.js"></script>
+  <script type="module" crossorigin src="./assets/index-ChfuVRu8.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-B7bFG-yC.css">
 </head>
 <body>
@@ -43,10 +43,11 @@
                 <input type="radio" name="embedding-method" value="synthetic" checked style="margin: 0;">
                 <span>🎲 Synthetic Embeddings (Fast)</span>
             </label>
-            <label style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                <input type="radio" name="embedding-method" value="real" style="margin: 0;">
-                <span>🧠 EmbeddingGemma (Semantic)</span>
+            <label id="real-embedding-label" style="display: flex; align-items: center; gap: 4px; margin-top: 4px; opacity: 0.5; cursor: not-allowed;" title="Loading model...">
+                <input type="radio" name="embedding-method" value="real" disabled style="margin: 0;">
+                <span id="real-embedding-status">🧠 EmbeddingGemma (Loading...)</span>
             </label>
+            <div id="model-status" style="font-size: 9px; color: #666; margin-top: 4px; display: none;"></div>
         </div>
         
         <div style="text-align: center; margin-top: 8px;">
