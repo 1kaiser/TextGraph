@@ -4,6 +4,8 @@
  * This provides a working demonstration while the real transformers integration is resolved
  */
 
+export {}; // Make this a module
+
 console.log('🧠 TextGraph: Loading EmbeddingGemma Demo Implementation...');
 
 class EmbeddingGemmaManager {

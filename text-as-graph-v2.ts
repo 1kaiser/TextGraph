@@ -3,6 +3,7 @@
  */
 
 import * as d3 from 'd3';
+import { conventions } from './d3-conventions.js';
 
 const padding = 30;
 const wordSpacing = 30;
@@ -43,7 +44,7 @@ export class TextAsGraph {
     
     // Make the z index lower to make overflow go behind words.
     this.sel.parent().style('z-index', '-1');
-    const c = d3.conventions({ 
+    const c = conventions({ 
       sel: this.wordsHolder, 
       margin: { left: 0 }, 
       layers: 'sd', 
