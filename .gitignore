@@ -69,10 +69,12 @@ different-sentences-test.png
 embeddinggemma-simple-test.png
 debug-function-test.png
 
-# EmbeddingGemma development files (keep demo implementation)
+# EmbeddingGemma development files (keep demo and real implementations)
 embedding-gemma.js
 embedding-gemma-global.js
 !embedding-gemma-demo.js
+!embedding-gemma-real.js
+!embedding-worker.js
 
 # Playwright test results and artifacts
 test-results/
@@ -83,10 +85,13 @@ playwright-report/
 test_dual_gat.html
 dual-gat-*.js
 
-# Demo creation scripts (keep one for reproducibility)
-create-demo-gif.js
-create-demo-screenshots.js
-!create-simple-demo.js
+# Demo creation scripts (ignore all demo creation files)
+create-demo-*.js
+create-*-demo.js
+demo-*/
+*-screenshots-*/
+video-recordings/
+palette.png
 
 # GIF files (keep optimized version only)
 textgraph-interactive-demo.gif

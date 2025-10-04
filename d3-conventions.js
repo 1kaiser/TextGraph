@@ -45,8 +45,8 @@ if (!d3.selection.prototype.translate) {
   };
 }
 
-// d3.conventions function
-d3.conventions = function(opts) {
+// d3.conventions function - export as standalone function
+export function conventions(opts) {
   opts = opts || {};
   const sel = opts.sel || d3.select('body');
   const margin = opts.margin || { top: 0, right: 0, bottom: 0, left: 0 };
@@ -88,17 +88,15 @@ d3.conventions = function(opts) {
   return result;
 };
 
-// Add d3.cross if not present (for creating cartesian products)
-if (!d3.cross) {
-  d3.cross = function(a, b) {
-    const result = [];
-    for (let i = 0; i < a.length; i++) {
-      for (let j = 0; j < b.length; j++) {
-        result.push([a[i], b[j]]);
-      }
+// Standalone cross function for cartesian products
+export function cross(a, b) {
+  const result = [];
+  for (let i = 0; i < a.length; i++) {
+    for (let j = 0; j < b.length; j++) {
+      result.push([a[i], b[j]]);
     }
-    return result;
-  };
+  }
+  return result;
 }
 
 export default d3;
