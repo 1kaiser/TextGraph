@@ -4,7 +4,7 @@
 
 Interactive text-to-graph visualization with Graph Attention Networks (GAT) computation and transparency-based attention mapping with **enhanced 3-way hover interconnectedness**.
 
-![TextGraph Interactive Demo](textgraph-demo-updated.gif)
+![TextGraph Interactive Demo](screenshots/demo.gif)
 
 *Full interactive demonstration: Dual GAT matrices • Smooth cross-matrix highlighting • Real-time graph↔matrix interconnections • EmbeddingGemma 768D semantic embeddings • Complete custom query workflow (Oct 2025)*
 
