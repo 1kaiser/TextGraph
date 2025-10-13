@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test('record interactions', async ({ page }) => {
-  await page.goto('http://localhost:1234');
+  await page.goto('http://localhost:1235');
 
   // Wait for the real embedding model to be ready (or fail gracefully)
   try {
@@ -22,13 +22,21 @@ test('record interactions', async ({ page }) => {
   // Wait for the graph to be generated. We can check for the presence of SVG elements.
   await expect(page.locator('#text-as-graph > svg').first()).toBeVisible();
 
-  // Drag the input box
+  // Drag the input box out of the way
   const inputBox = page.locator('.text-input-section');
   await inputBox.hover();
   await page.mouse.down();
-  await page.mouse.move(500, 200);
+  await page.mouse.move(1000, 50); // Move to top-right
   await page.mouse.up();
 
-  // Wait for a moment to see the result
-  await page.waitForTimeout(5000);
+  // Hover over a graph node
+  await page.locator('rect[data-index]').first().hover();
+  await page.waitForTimeout(1000);
+
+  // Hover over a matrix cell
+  await page.locator('.dual-matrix .adj-mat-square').nth(5).hover();
+  await page.waitForTimeout(1000);
+
+  // Wait for a final moment
+  await page.waitForTimeout(2000);
 });
