@@ -23,6 +23,12 @@ This system implements a complete GAT attention visualization where:
 npm run dev
 ```
 
+To regenerate the demo GIF, run the following command:
+
+```bash
+./create-gif.sh
+```
+
 Access: http://localhost:1234
 
 ## 🆕 **Dual GAT Implementation** (New Feature!)

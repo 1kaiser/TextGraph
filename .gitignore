@@ -97,6 +97,7 @@ palette.png
 textgraph-interactive-demo.gif
 *.gif
 !textgraph-demo-optimized.gif
+!screenshots/demo.gif
 
 # Development and experimental files
 d3-conventions-*.js
