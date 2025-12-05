@@ -1,0 +1,79 @@
+Text-as-Graph: Graph Attention Network (GAT) Process Flow
+=========================================================
+
+This diagram illustrates how the application transforms raw text into the
+interactive visualization you see on the screen.
+
+      [ User Input ]
+      (Paragraph + Query)
+             |
+             | 1. Tokenization
+             v
+      [ Tokens ]  ("Graph", "attention", "mechanisms")
+             |
+             | 2. Embedding Generation (Vectorization)
+             |    - Converts words to numbers (Vectors)
+             v
+      [ Embedding Vectors ]
+      (e.g., [0.1, -0.5, 0.3, ...])
+             |
+             +------------------------------------------------+
+             |                                                |
+             | 3a. Educational GAT Path                       | 3b. Original GAT Path
+             |     (Simplified for Learning)                  |     (Veličković et al. 2017)
+             |                                                |
+             v                                                v
+    [ Dot Product Attention ]                        [ Linear Transformation ]
+    (Score = Vector_A • Vector_B)                    (Wh = Weight_Matrix × Vector)
+             |                                                |
+             |                                                v
+             |                                       [ Concatenation ]
+             |                                       (Combine features of both words)
+             |                                                |
+             |                                                v
+             |                                       [ Attention Vector ]
+             |                                       (a^T × Concatenated_Features)
+             |                                                |
+             v                                                v
+    [ Raw Attention Scores ]                         [ Raw Attention Scores ]
+             |                                                |
+             | 4. Normalization (Softmax)                     | 4. Normalization (Softmax)
+             |    - Makes scores sum to 1.0                   |    - Makes scores sum to 1.0
+             |    - Excludes self (diagonal=0)                |    - Includes self
+             v                                                v
+    [ Attention Matrix A ]                           [ Attention Matrix B ]
+    (Blue Matrix)                                    (Red Matrix)
+             |                                                |
+             +-----------------------+------------------------+
+                                     |
+                                     | 5. Visualization Mapping
+                                     v
+                          [ Visual Output (D3.js) ]
+                                     |
+                  +------------------+------------------+
+                  |                                     |
+         [ Graph Nodes ]                        [ Heatmap Matrices ]
+    (Opacity = Max Attention)              (Cell Color = Attention Score)
+    (Visualizes importance)                (Visualizes relationships)
+
+
+Explanation of Steps:
+---------------------
+
+1. **Tokenization**: The sentence is split into individual words (tokens). Punctuation is removed.
+   *Example*: "Graph attention" -> ["graph", "attention"]
+
+2. **Embedding**: Each word is converted into a list of 64 numbers (a vector).
+   *   **Synthetic**: We use math functions (sine/cosine) to generate these deterministically based on the characters.
+   *   **EmbeddingGemma**: (If enabled) A real AI model generates these based on semantic meaning.
+
+3. **Attention Computation**: The core "brain" of the process.
+   *   **Educational GAT**: Uses a simple "Dot Product". If two vectors point in the same direction, they are "related". It's intuitive but simple.
+   *   **Original GAT**: The actual neural network method. It uses a "Weight Matrix" (W) that the model *learns* (we simulate this) to transform the vectors before comparing them. It creates more complex, non-linear relationships.
+
+4. **Normalization (Softmax)**: We take the raw scores and turn them into probabilities (percentages).
+   *   If Word A pays 0.8 attention to Word B and 0.2 to Word C, it means Word B is much more relevant to Word A.
+
+5. **Visualization**:
+   *   **Nodes**: We make the words in the graph transparent or opaque based on how much "attention" they receive. Important words stand out.
+   *   **Matrices**: We show the raw numbers in a grid so you can see exactly which word connects to which.

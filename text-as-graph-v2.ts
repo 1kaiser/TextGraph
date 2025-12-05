@@ -27,6 +27,10 @@ export class TextAsGraph {
   constructor() {
     console.log('🚀 TextGraph: Initializing with enhanced text measurement system...');
     
+    // Clear existing content to prevent duplicates during Vue hot reloads or updates
+    this.sel.selectAll('*').remove();
+    this.wordsHolder = this.sel.append('div');
+
     // Create measurement SVG for accurate text sizing  
     this.measurementSvg = d3.select('body').append('svg')
       .style('position', 'absolute')
@@ -43,7 +47,9 @@ export class TextAsGraph {
     console.log('🎯 TextGraph: Enhanced text measurement system active - getBBox() API enabled!');
     
     // Make the z index lower to make overflow go behind words.
-    this.sel.parent().style('z-index', '-1');
+    // this.sel.parent().style('z-index', '-1');
+    // In Vue, sel.parent() might be the component root, which we shouldn't manipulate styling of directly if possible
+
     const c = conventions({ 
       sel: this.wordsHolder, 
       margin: { left: 0 }, 
@@ -438,3 +444,7 @@ export class TextAsGraph {
   }
 }
 
+// Support for legacy style instantiation if needed
+if (typeof window !== 'undefined') {
+  window.TextAsGraph = TextAsGraph;
+}
