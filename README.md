@@ -4,7 +4,7 @@
 
 Interactive text-to-graph visualization with Graph Attention Networks (GAT) computation and transparency-based attention mapping with **enhanced 3-way hover interconnectedness**.
 
-![TextGraph Interactive Demo](screenshots/demo.gif)
+![TextGraph Interactive Demo](screenshot_final.png)
 
 *Full interactive demonstration: Dual GAT matrices • Smooth cross-matrix highlighting • Real-time graph↔matrix interconnections • EmbeddingGemma 768D semantic embeddings • Complete custom query workflow (Oct 2025)*
 
@@ -628,4 +628,8 @@ This project extends the educational approach of Distill publications by providi
 4. **Educational Accessibility**: Complete local execution with portable deployment and detailed mathematical explanations
 
 ### References
-[1] Sanchez-Lengeling, B., Reif, E., Pearce, A., & Wiltschko, A. B. (2021). A Gentle Introduction to Graph Neural Networks. *Distill*. https://doi.org/10.23915/distill.00033
+1. Veličković, P., Cucurull, G., Casanova, A., Romero, A., Liò, P., & Bengio, Y. (2018). Graph Attention Networks. *ICLR 2018*. https://arxiv.org/abs/1710.10903
+2. Sanchez-Lengeling, B., Reif, E., Pearce, A., & Wiltschko, A. B. (2021). A Gentle Introduction to Graph Neural Networks. *Distill*. https://doi.org/10.23915/distill.00033
+3. Google DeepMind / ONNX Community — EmbeddingGemma (`onnx-community/embeddinggemma-300m-ONNX`) via [Transformers.js](https://huggingface.co/docs/transformers.js).
+4. Visualization Stack: [Vue 3](https://vuejs.org/), [D3.js](https://d3js.org/), and [MathJax](https://www.mathjax.org/).
+5. Hosted on [1kaiser.github.io/TextGraph](https://1kaiser.github.io/TextGraph/) (part of [1kaiser.github.io](https://1kaiser.github.io/)).

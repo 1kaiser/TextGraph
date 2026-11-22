@@ -501,10 +501,11 @@
                     }));
                     console.log('✅ TextGraph: Model loaded.');
                 } catch (e) {
+                    const msg = (e && e.message) || String(e);
                     console.error("Model load failed", e);
                     this.isLoading = false;
                     window.dispatchEvent(new CustomEvent('embedding-progress', {
-                        detail: { progress: 0, status: "Error loading model", isLoading: false }
+                        detail: { progress: 0, status: `Model error (using synthetic fallback): ${msg}`, isLoading: false }
                     }));
                     throw e;
                 }
@@ -1831,6 +1832,23 @@
         const App = {
             template: `
                 <div class="app-container">
+                    <div style="position: fixed; top: 10px; right: 12px; z-index: 1002; display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); padding: 6px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <a href="https://1kaiser.github.io/" style="color: #2563eb; text-decoration: none; font-weight: 600;">&larr; 1kaiser.github.io</a>
+                        <span style="color: #cbd5e1;">|</span>
+                        <a href="https://github.com/1kaiser/TextGraph" target="_blank" rel="noopener" style="color: #4b5563; text-decoration: none;">GitHub</a>
+                        <button type="button" @click="showRefs = !showRefs" style="background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 5px; padding: 2px 8px; cursor: pointer; font-size: 12px; color: #1f2937; font-weight: 500;">References</button>
+                    </div>
+                    <div v-if="showRefs" style="position: fixed; top: 48px; right: 12px; z-index: 1003; max-width: 440px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px 16px; box-shadow: 0 10px 28px rgba(0,0,0,0.16); font-size: 12px; color: #334155; line-height: 1.55;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="font-size: 13px; color: #0f172a;">References &amp; Attribution</strong>
+                            <button type="button" @click="showRefs = false" style="background: none; border: none; cursor: pointer; font-size: 14px; color: #64748b;">&times;</button>
+                        </div>
+                        <ul style="margin: 0; padding-left: 16px;">
+                            <li>Veličković, P. et al. (2018). <em>Graph Attention Networks</em>. ICLR (<a href="https://arxiv.org/abs/1710.10903" target="_blank" rel="noopener">arXiv:1710.10903</a>).</li>
+                            <li>Sanchez-Lengeling, B., Reif, E., Pearce, A., &amp; Wiltschko, A. B. (2021). <em>A Gentle Introduction to Graph Neural Networks</em>. Distill (<a href="https://doi.org/10.23915/distill.00033" target="_blank" rel="noopener">doi:10.23915/distill.00033</a>).</li>
+                            <li><strong>Models &amp; Libraries:</strong> <a href="https://huggingface.co/onnx-community/embeddinggemma-300m-ONNX" target="_blank" rel="noopener">EmbeddingGemma-300M (ONNX)</a>, <a href="https://huggingface.co/docs/transformers.js" target="_blank" rel="noopener">Transformers.js</a>, <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>, <a href="https://d3js.org/" target="_blank" rel="noopener">D3.js</a>, <a href="https://www.mathjax.org/" target="_blank" rel="noopener">MathJax</a>.</li>
+                        </ul>
+                    </div>
                     <ControlPanel
                         v-model:query="queryText"
                         v-model:paragraph="paragraphText"
@@ -1849,6 +1867,7 @@
             `,
             components: { ControlPanel, GraphVisualizer, CalculationBreakdown },
             setup() {
+                const showRefs = ref(false);
                 const queryText = ref('Graph attention mechanisms capture relationships');
                 const paragraphText = ref('Neural networks are powerful machine learning models. Graph attention mechanisms capture complex relationships between words. These models can transform how we process natural language understanding.');
                 const isLoading = ref(false);
@@ -2006,7 +2025,7 @@
                 });
 
                 return {
-                    queryText, paragraphText, isLoading, loadingProgress, loadingStatus, graphVisualizer, handleUpdate, interactionDetails
+                    showRefs, queryText, paragraphText, isLoading, loadingProgress, loadingStatus, graphVisualizer, handleUpdate, interactionDetails
                 };
             }
         };
