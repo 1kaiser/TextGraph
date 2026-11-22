@@ -3,348 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text as Graph - Exact Distill Implementation (Vue Single File)</title>
-    
-    <!-- D3.js -->
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    
-    <!-- Vue.js -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-    <!-- MathJax -->
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-    </script>
-    <script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
+    <title>TextGraph — Dual Graph Attention &amp; Token Embeddings</title>
+    <link rel="icon" href="data:,">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <style>
-        /* Global Styles */
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --blue: #2563eb;
+            --crimson: #dc2626;
+            --amber: #f59e0b;
+        }
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
         }
-
-        .app-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
-
-        /* Control Panel Styles */
-        .text-input-section {
-            position: fixed;
-            width: 350px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transition: box-shadow 0.2s ease;
-            user-select: none;
-        }
-
-        .text-input-section:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-        }
-
-        .drag-handle {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            width: 16px;
-            height: 16px;
-            background: #dc3545;
-            border-radius: 50%;
-            cursor: grab;
-            z-index: 1001;
-            transition: background 0.2s ease;
-        }
-
-        .text-input-section:hover .drag-handle {
-            background: #ff4757;
-        }
-
-        .paragraph-section {
-            margin-bottom: 15px;
-        }
-
-        .section-header {
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
         }
-
-        .section-title {
-            font-size: 12px;
-            font-weight: 500;
-            color: #555;
-        }
-
-        .toggle-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: #666;
-            padding: 0;
-        }
-
-        .paragraph-container textarea {
-            width: 100%;
-            height: 80px;
-            padding: 8px;
-            font-size: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
-            font-family: monospace;
-            box-sizing: border-box;
-        }
-
-        .char-count {
-            font-size: 10px;
-            color: #888;
-            text-align: right;
-            margin-top: 2px;
-        }
-
-        .query-section-title {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .query-input {
-            width: 100%;
-            padding: 8px;
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-            box-sizing: border-box;
-            margin-bottom: 8px;
-        }
-
-        .embedding-section {
-            margin-bottom: 8px;
-            font-size: 11px;
-        }
-
-        .radio-label {
+        .topbar-left, .topbar-right {
             display: flex;
             align-items: center;
-            gap: 4px;
-            margin-bottom: 4px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .topbar a {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .topbar a.muted-link { color: #475569; font-weight: 500; }
+        .topbar-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+        .badge-status.ready { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+        .badge-status.error { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+        .btn {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+        .btn-primary {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #ffffff;
+        }
+        .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+        .btn-chip {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #334155;
             cursor: pointer;
         }
+        .btn-chip:hover { background: #e2e8f0; }
 
-        .radio-label.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .page {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 16px 20px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .card-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .card-sub {
+            font-size: 12px;
+            color: var(--muted);
         }
 
-        .button-container {
-            text-align: center;
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 900px) {
+            .controls-grid { grid-template-columns: 1fr; }
+        }
+        .field-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+        textarea.ctrl, input.ctrl, select.ctrl {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            color: var(--text);
+            background: #fff;
+        }
+        textarea.ctrl {
+            min-height: 76px;
+            resize: vertical;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 12px;
+        }
+        .param-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
             margin-top: 8px;
         }
-
-        .update-btn {
-            background: #4285f4;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #0ea5e9);
+            transition: width 0.2s ease;
         }
 
-        .update-btn:hover {
-            background: #3367d6;
-        }
-
-        /* Text As Graph Styles */
-        #text-as-graph {
-            position: relative;
-            width: 100%;
-            min-height: 400px;
-        }
-
-        #text-as-graph input {
-            font-family: monospace;
-            word-spacing: 30px;
-            background-color: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            max-width: none;
-        }
-
-        #text-as-graph rect {
-            cursor: pointer;
-        }
-
-        #text-as-graph text {
-            user-select: none;
-            cursor: default;
-        }
-
-        #text-as-graph svg text.top,
-        #text-as-graph svg text.side {
-            font-size: 12px;
-            fill: gray;
-        }
-
-        #text-as-graph svg rect {
-            shape-rendering: crispEdges;
-        }
-
-        /* Calculation Breakdown Styles */
-        .calculation-container {
-            position: fixed;
-            top: 450px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: auto;
-            min-width: 800px;
-            max-width: 98vw;
-            height: auto;
-            min-height: 200px;
-            background: rgba(255, 255, 255, 0.98);
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px 30px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center;
-            z-index: 900;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.05);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .calculation-container.placeholder {
-            justify-content: center;
-            align-items: center;
-            color: #6b7280;
-            font-size: 1.1em;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .calc-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: nowrap;
+        .token-graph-wrap {
             width: 100%;
             overflow-x: auto;
-            padding: 5px 0;
         }
-
-        .path-label {
-            min-width: 200px;
-            font-weight: bold;
-            color: #333;
+        #token-graph-svg {
+            display: block;
+            margin: 0 auto;
+        }
+        .token-node-group { cursor: pointer; }
+        .matrices-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+        @media (max-width: 960px) {
+            .matrices-grid { grid-template-columns: 1fr; }
+        }
+        .matrix-box {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            background: #fcfdff;
+            overflow-x: auto;
+        }
+        .matrix-box h3 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .path-label .emoji {
-            font-size: 1.2em;
-            margin-right: 5px;
-        }
-
-        .paper-link a {
-            font-size: 0.8em;
-            color: #4285f4;
-            text-decoration: none;
-            font-weight: normal;
-        }
-
-        .paper-link a:hover {
-            text-decoration: underline;
-        }
-
-        .step-box {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 8px 12px;
-            min-width: 120px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .matrix-eq {
+            font-size: 12px;
+            color: #475569;
+            margin-bottom: 10px;
+            min-height: 22px;
+        }
+        .matrix-svg {
+            display: block;
+            margin: 0 auto;
+            overflow: visible;
+        }
+        .adj-mat-square {
+            shape-rendering: crispEdges;
+            cursor: pointer;
+            transition: opacity 0.1s;
         }
 
-        .step-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        .calc-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-
+        .calc-row {
+            display: flex;
+            align-items: stretch;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .path-tag {
+            min-width: 175px;
+            max-width: 175px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .path-tag.edu { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .path-tag.orig { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .step-box {
+            min-width: 148px;
+            flex: 1 0 148px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 4px;
+        }
         .step-title {
-            font-size: 0.7em;
-            color: #6c757d;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
+            color: var(--muted);
         }
-
-        .math-formula {
-            font-size: 0.9em;
-        }
-
         .step-value {
-            font-weight: bold;
-            font-family: monospace;
-            color: #333;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
         }
-
-        .step-value.highlight {
-            color: #2563eb;
-            font-size: 1.1em;
+        .step-value.edu { color: var(--blue); font-size: 15px; }
+        .step-value.orig { color: var(--crimson); font-size: 15px; }
+        .step-sub {
+            font-size: 11px;
+            color: #475569;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         }
-
-        .original .step-value.highlight {
-            color: #dc2626;
-        }
-
-        .arrow {
-            color: #cbd5e1;
-            font-weight: 300;
-            margin: 0 15px;
-            font-size: 1.5em;
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 18px;
             user-select: none;
         }
+        canvas.heatmap {
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+            image-rendering: pixelated;
+        }
 
-        .interaction-info {
-            position: absolute;
-            top: 5px;
-            right: 20px;
-            font-size: 0.8em;
-            color: #666;
-            background: rgba(255,255,255,0.9);
-            padding: 2px 5px;
-            border-radius: 4px;
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-card {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 620px;
+            width: 100%;
+            padding: 20px 24px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+            font-size: 13px;
+            color: #334155;
+        }
+        .modal-card h2 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: var(--text);
         }
     </style>
-  <script type="module" crossorigin src="./assets/index-D3fPq3ac.js"></script>
+  <script type="module" crossorigin src="./assets/index-CQdZplG3.js"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- App content will be mounted here -->
+<div id="app">
+    <header class="topbar">
+        <div class="topbar-left">
+            <a href="https://1kaiser.github.io/">&larr; 1kaiser.github.io</a>
+            <span style="color:#cbd5e1;">|</span>
+            <span class="topbar-title">TextGraph: Dual Attention &amp; Token Embeddings</span>
+            <a class="muted-link" href="/TextGraph/" v-if="isCvCopy">Canonical App</a>
+        </div>
+        <div class="topbar-right">
+            <span id="embedding-status" :class="['badge-status', statusKind]">{{ statusLabel }}</span>
+            <a class="muted-link" href="https://github.com/1kaiser/TextGraph" target="_blank" rel="noopener">GitHub</a>
+            <button id="refs-btn" class="btn" type="button" @click="showRefs = true">References</button>
+        </div>
+    </header>
+
+    <div v-if="showRefs" id="refs-modal" class="modal-backdrop" @click.self="showRefs = false">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:8px;">
+                <h2>References &amp; Attribution</h2>
+                <button id="refs-close-btn" class="btn" type="button" @click="showRefs = false">Close</button>
+            </div>
+            <ul style="margin:0; padding-left:18px; line-height:1.7;">
+                <li><strong>Graph Attention Networks (Original GAT):</strong> Veličković, P., Cucurull, G., Casanova, A., Romero, A., Liò, P., &amp; Bengio, Y. (2018). <em>Graph Attention Networks</em>, ICLR (<a href="https://arxiv.org/abs/1710.10903" target="_blank" rel="noopener">arXiv:1710.10903</a>).</li>
+                <li><strong>Text-as-Graph &amp; Educational GNN:</strong> Sanchez-Lengeling, B., Reif, E., Pearce, A., &amp; Wiltschko, A. B. (2021). <em>A Gentle Introduction to Graph Neural Networks</em>, Distill (<a href="https://doi.org/10.23915/distill.00033" target="_blank" rel="noopener">doi:10.23915/distill.00033</a>).</li>
+                <li><strong>Scaled Dot-Product Attention:</strong> Vaswani, A. et al. (2017). <em>Attention Is All You Need</em>, NeurIPS (<a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">arXiv:1706.03762</a>).</li>
+                <li><strong>In-Browser Token Embeddings:</strong> <a href="https://huggingface.co/Xenova/all-MiniLM-L6-v2" target="_blank" rel="noopener">all-MiniLM-L6-v2</a>, <a href="https://huggingface.co/Xenova/bge-small-en-v1.5" target="_blank" rel="noopener">bge-small-en-v1.5</a>, <a href="https://huggingface.co/onnx-community/embeddinggemma-300m-ONNX" target="_blank" rel="noopener">EmbeddingGemma-300M</a> via <a href="https://huggingface.co/docs/transformers.js" target="_blank" rel="noopener">Transformers.js v4.3.2</a>.</li>
+                <li><strong>UI &amp; Math:</strong> <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>, <a href="https://d3js.org/" target="_blank" rel="noopener">D3.js v7</a>, and <a href="https://katex.org/" target="_blank" rel="noopener">KaTeX</a>.</li>
+            </ul>
+        </div>
     </div>
+
+    <main class="page">
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Input Sequence, Context &amp; Attention Hyperparameters</h2>
+                    <div class="card-sub">Contextualized transformer embeddings are computed non-blockingly in a Web Worker; synthetic vectors run immediately until neural weights finish loading.</div>
+                </div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    <span style="font-size:11px; color:#64748b; font-weight:600;">Presets:</span>
+                    <button v-for="p in presets" :key="p.name" type="button" class="btn-chip" @click="applyPreset(p)">{{ p.name }}</button>
+                </div>
+            </div>
+
+            <div class="controls-grid">
+                <div>
+                    <div class="field-label">
+                        <label for="paragraph-input">Context Paragraph (encoded before query for contextualized token vectors)</label>
+                        <span>{{ paragraphText.length }} chars</span>
+                    </div>
+                    <textarea id="paragraph-input" class="ctrl" v-model="paragraphText" placeholder="Optional surrounding paragraph context..."></textarea>
+                </div>
+                <div style="display:flex; flex-direction:column; justify-content:space-between; gap:8px;">
+                    <div>
+                        <div class="field-label">
+                            <label for="query-input">Query Sentence (up to 14 words)</label>
+                            <span>{{ queryTokensPreview.length }} tokens</span>
+                        </div>
+                        <input id="query-input" class="ctrl" type="text" v-model="queryText" @keydown.enter="recomputeFromModel" placeholder="Enter sentence to visualize as graph...">
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <button id="compute-btn" class="btn btn-primary" type="button" @click="recomputeFromModel">Compute Graph Attention</button>
+                        <button id="clear-pin-btn" class="btn" type="button" v-if="pinnedCell" @click="pinnedCell = null">Unpin Cell [{{ pinnedCell.i }},{{ pinnedCell.j }}]</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="param-row">
+                <div>
+                    <label class="field-label" for="model-select">Embedding Backend</label>
+                    <select id="model-select" class="ctrl" v-model="selectedModelId" @change="onModelChange">
+                        <option value="Xenova/all-MiniLM-L6-v2">all-MiniLM-L6-v2 (384D, ~23 MB WASM)</option>
+                        <option value="Xenova/bge-small-en-v1.5">bge-small-en-v1.5 (384D, ~34 MB WASM)</option>
+                        <option value="onnx-community/embeddinggemma-300m-ONNX">EmbeddingGemma-300M (768D, ~195 MB)</option>
+                        <option value="synthetic">Synthetic Lexical Baseline (64D, Instant)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label" for="topology-select">Neighborhood Mask &Nu;<sub>i</sub></label>
+                    <select id="topology-select" class="ctrl" v-model="topology" @change="recomputeMathOnly">
+                        <option value="full">Fully Connected (All pairs)</option>
+                        <option value="window1">Distill Sequence Window (|i - j| &le; 1)</option>
+                        <option value="window2">Local Window (|i - j| &le; 2)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label" for="heads-select">Original GAT Heads (K)</label>
+                    <select id="heads-select" class="ctrl" v-model.number="numHeads" @change="recomputeMathOnly">
+                        <option :value="1">K = 1 head</option>
+                        <option :value="2">K = 2 heads (averaged)</option>
+                        <option :value="4">K = 4 heads (averaged)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="field-label" for="seed-select">GAT Weight Seed (W, a)</label>
+                    <select id="seed-select" class="ctrl" v-model.number="gatSeed" @change="recomputeMathOnly">
+                        <option :value="42">Seed 42 (Xavier)</option>
+                        <option :value="7">Seed 7 (Xavier)</option>
+                        <option :value="1337">Seed 1337 (Xavier)</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="field-label">
+                        <label for="temp-range">Dot-Product Temp &tau;</label>
+                        <span>{{ temperature.toFixed(2) }}</span>
+                    </div>
+                    <input id="temp-range" type="range" min="0.10" max="1.50" step="0.05" v-model.number="temperature" @input="recomputeMathOnly" style="width:100%;">
+                </div>
+                <div style="display:flex; align-items:flex-end; padding-bottom:4px;">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#334155; cursor:pointer;">
+                        <input id="self-loop-checkbox" type="checkbox" v-model="eduSelfLoops" @change="recomputeMathOnly">
+                        <span>Edu Dot-Product Self-Loops</span>
+                    </label>
+                </div>
+            </div>
+
+            <div v-if="workerLoading" class="progress-track">
+                <div class="progress-fill" :style="{ width: workerProgress + '%' }"></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">1. Text-as-Graph Representation &amp; Token Embeddings</h2>
+                    <div class="card-sub">Nodes display incoming GAT attention strength (opacity), top attention flow arcs, and compressed embedding feature barcodes below each word. Hover a node or click any matrix cell below.</div>
+                </div>
+                <span class="card-sub" v-if="embInfo">{{ embInfo }}</span>
+            </div>
+            <div class="token-graph-wrap">
+                <svg id="token-graph-svg"></svg>
+            </div>
+        </section>
+
+        <section class="matrices-grid">
+            <div class="matrix-box">
+                <h3>
+                    <span style="color: var(--blue);">2A. Educational Dot-Product Attention</span>
+                    <span class="card-sub">{{ eduSelfLoops ? 'With Self-Loops' : 'Off-Diagonal Only' }} &middot; &tau;={{ temperature.toFixed(2) }}</span>
+                </h3>
+                <div class="matrix-eq" v-html="texDot"></div>
+                <svg id="edu-matrix-svg" class="matrix-svg"></svg>
+            </div>
+
+            <div class="matrix-box">
+                <h3>
+                    <span style="color: var(--crimson);">2B. Original GAT Attention (Veličković et al., 2018)</span>
+                    <span class="card-sub">K={{ numHeads }} head{{ numHeads > 1 ? 's' : '' }} &middot; F'=32 &middot; &alpha;<sub>LeakyReLU</sub>=0.2</span>
+                </h3>
+                <div class="matrix-eq" v-html="texGat"></div>
+                <svg id="gat-matrix-svg" class="matrix-svg"></svg>
+            </div>
+        </section>
+
+        <section id="calc-breakdown" class="card calc-panel">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">3. Exact Cell-Level Mathematical Walkthrough (Shared Token Vectors &#8477;<sup>{{ activeDim }}</sup>)</h2>
+                    <div class="card-sub" v-if="activeCell">
+                        Inspecting edge <strong style="color:#0f172a;">[{{ activeCell.i }}, {{ activeCell.j }}]</strong>:
+                        &ldquo;<strong>{{ activeCell.sourceWord }}</strong>&rdquo; &rarr; &ldquo;<strong>{{ activeCell.targetWord }}</strong>&rdquo;
+                        <span v-if="activeCell.isPinned">(pinned &mdash; click cell again or Unpin to resume hover)</span>
+                        <span v-else>(hover matrix cells to preview, click to pin)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeCell" style="display:flex; flex-direction:column; gap:12px;">
+                <div class="calc-row">
+                    <div class="path-tag edu">
+                        <span>Dot-Product Path</span>
+                        <span style="font-weight:500; font-size:11px; margin-top:2px;">Same <em>h<sub>i</sub></em>, <em>h<sub>j</sub></em> vectors</span>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-title">Normalized Vectors</div>
+                        <div v-html="katexInline('\\vec{h}_i, \\vec{h}_j \\in \\mathbb{R}^{' + activeDim + '}')"></div>
+                        <canvas ref="canvasHSource" width="64" height="16" class="heatmap"></canvas>
+                        <canvas ref="canvasHTarget" width="64" height="16" class="heatmap"></canvas>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">Cosine Similarity</div>
+                        <div v-html="katexInline('\\vec{h}_i \\cdot \\vec{h}_j')"></div>
+                        <div class="step-value">{{ activeCell.dotCos.toFixed(4) }}</div>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">Scaled Logit (s/&tau;)</div>
+                        <div v-html="katexInline('s_{ij}/' + temperature.toFixed(2))"></div>
+                        <div class="step-value">{{ activeCell.dotMasked ? '-inf (masked)' : activeCell.dotLogit.toFixed(4) }}</div>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">Softmax Weight &alpha;<sub>ij</sub></div>
+                        <div class="step-value edu">{{ activeCell.dotAlpha.toFixed(4) }}</div>
+                        <div class="step-sub">row &Sigma; = {{ activeCell.dotRowSum.toFixed(3) }}</div>
+                    </div>
+                </div>
+
+                <div class="calc-row">
+                    <div class="path-tag orig">
+                        <span>Original GAT (Head 1)</span>
+                        <span style="font-weight:500; font-size:11px; margin-top:2px;">Seed {{ gatSeed }} &middot; Xavier</span>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-title">Linear Projection W</div>
+                        <div v-html="katexInline('\\vec{h}\'_i = \\mathbf{W}\\vec{h}_i \\in \\mathbb{R}^{32}')"></div>
+                        <canvas ref="canvasW" width="64" height="32" class="heatmap"></canvas>
+                        <div class="step-sub">W[0,0..2]=[{{ activeCell.whiSample }}]</div>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">Concatenation [h'<sub>i</sub> || h'<sub>j</sub>]</div>
+                        <div v-html="katexInline('[\\vec{h}\'_i \\,\\|\\, \\vec{h}\'_j] \\in \\mathbb{R}^{64}')"></div>
+                        <canvas ref="canvasConcat" width="64" height="16" class="heatmap"></canvas>
+                        <div class="step-sub">64D vector</div>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">Attention Vector a<sup>T</sup></div>
+                        <div v-html="katexInline('z_{ij} = \\vec{a}^T [\\vec{h}\'_i \\,\\|\\, \\vec{h}\'_j]')"></div>
+                        <canvas ref="canvasA" width="64" height="16" class="heatmap"></canvas>
+                        <div class="step-value">{{ activeCell.gatPreLeaky.toFixed(4) }}</div>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">LeakyReLU (0.2)</div>
+                        <div v-html="katexInline('e_{ij} = \\text{Leaky}(z_{ij})')"></div>
+                        <div class="step-value">{{ activeCell.gatMasked ? '-inf (masked)' : activeCell.gatE.toFixed(4) }}</div>
+                    </div>
+                    <div class="flow-arrow">&rarr;</div>
+                    <div class="step-box">
+                        <div class="step-title">Softmax &alpha;<sub>ij</sub> ({{ numHeads }}H mean)</div>
+                        <div class="step-value orig">{{ activeCell.gatAlpha.toFixed(4) }}</div>
+                        <div class="step-sub">H1: {{ activeCell.gatHead0Alpha.toFixed(4) }} &middot; &Sigma;={{ activeCell.gatRowSum.toFixed(3) }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
 
 </body>
 </html>
