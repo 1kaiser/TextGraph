@@ -3,224 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text as Graph - Exact Distill Implementation</title>
+    <title>Text as Graph - Exact Distill Implementation (Vue Single File)</title>
     
-    <!-- D3.js for visualization -->
+    <!-- D3.js -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
     
-    <!-- MathJax for font rendering consistency -->
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- MathJax -->
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     </script>
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  <script type="module" crossorigin src="./assets/index-CBEZeizZ.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-B7bFG-yC.css">
+
+    <style>
+        /* Global Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Control Panel Styles */
+        .text-input-section {
+            position: fixed;
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: box-shadow 0.2s ease;
+            user-select: none;
+        }
+
+        .text-input-section:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
+        .drag-handle {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 16px;
+            height: 16px;
+            background: #dc3545;
+            border-radius: 50%;
+            cursor: grab;
+            z-index: 1001;
+            transition: background 0.2s ease;
+        }
+
+        .text-input-section:hover .drag-handle {
+            background: #ff4757;
+        }
+
+        .paragraph-section {
+            margin-bottom: 15px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            padding: 0;
+        }
+
+        .paragraph-container textarea {
+            width: 100%;
+            height: 80px;
+            padding: 8px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        .char-count {
+            font-size: 10px;
+            color: #888;
+            text-align: right;
+            margin-top: 2px;
+        }
+
+        .query-section-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .query-input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+
+        .embedding-section {
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .radio-label.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .update-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .update-btn:hover {
+            background: #3367d6;
+        }
+
+        /* Text As Graph Styles */
+        #text-as-graph {
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+        }
+
+        #text-as-graph input {
+            font-family: monospace;
+            word-spacing: 30px;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            max-width: none;
+        }
+
+        #text-as-graph rect {
+            cursor: pointer;
+        }
+
+        #text-as-graph text {
+            user-select: none;
+            cursor: default;
+        }
+
+        #text-as-graph svg text.top,
+        #text-as-graph svg text.side {
+            font-size: 12px;
+            fill: gray;
+        }
+
+        #text-as-graph svg rect {
+            shape-rendering: crispEdges;
+        }
+
+        /* Calculation Breakdown Styles */
+        .calculation-container {
+            position: fixed;
+            top: 450px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 800px;
+            max-width: 98vw;
+            height: auto;
+            min-height: 200px;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            z-index: 900;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.05);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .calculation-container.placeholder {
+            justify-content: center;
+            align-items: center;
+            color: #6b7280;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .calc-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            width: 100%;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .path-label {
+            min-width: 200px;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .path-label .emoji {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+
+        .paper-link a {
+            font-size: 0.8em;
+            color: #4285f4;
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+        .paper-link a:hover {
+            text-decoration: underline;
+        }
+
+        .step-box {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px 12px;
+            min-width: 120px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .step-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .step-title {
+            font-size: 0.7em;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .math-formula {
+            font-size: 0.9em;
+        }
+
+        .step-value {
+            font-weight: bold;
+            font-family: monospace;
+            color: #333;
+        }
+
+        .step-value.highlight {
+            color: #2563eb;
+            font-size: 1.1em;
+        }
+
+        .original .step-value.highlight {
+            color: #dc2626;
+        }
+
+        .arrow {
+            color: #cbd5e1;
+            font-weight: 300;
+            margin: 0 15px;
+            font-size: 1.5em;
+            user-select: none;
+        }
+
+        .interaction-info {
+            position: absolute;
+            top: 5px;
+            right: 20px;
+            font-size: 0.8em;
+            color: #666;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+    </style>
+  <script type="module" crossorigin src="./assets/index-D3fPq3ac.js"></script>
 </head>
 <body>
-    <div class="text-input-section" style="position: fixed; top: calc(100vh - 200px); left: 20px; width: 350px; background: rgba(255,255,255,0.95); border: 1px solid #ddd; border-radius: 8px; padding: 15px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: grab; transition: all 0.2s ease;">
-        <div class="drag-handle" style="position: absolute; top: -8px; right: -8px; width: 16px; height: 16px; background: #dc3545; border-radius: 50%; cursor: grab; z-index: 1001; transition: background 0.2s ease;"></div>
-        
-        <!-- Paragraph Input Section (Collapsible) -->
-        <div class="paragraph-section" style="margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <div style="font-size: 12px; font-weight: 500; color: #555;">📄 Context Paragraph</div>
-                <button id="toggle-paragraph" onclick="toggleParagraph()" style="background: none; border: none; cursor: pointer; font-size: 16px; color: #666;">▲</button>
-            </div>
-            <div id="paragraph-container" style="display: block;">
-                <textarea id="paragraph-input" placeholder="Enter full paragraph for attention context..." maxlength="10000" style="width: 100%; height: 80px; padding: 8px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: monospace;">Neural networks are powerful machine learning models. Graph attention mechanisms capture complex relationships between words. These models can transform how we process natural language understanding.</textarea>
-                <div style="font-size: 10px; color: #888; text-align: right; margin-top: 2px;">
-                    <span id="para-char-count">179</span>/10000 chars
-                </div>
-            </div>
-        </div>
-        
-        <!-- Query Sentence Section -->
-        <div style="text-align: center; margin-bottom: 10px; font-size: 14px; font-weight: 500;">🎯 Query Sentence</div>
-        <input type="text" id="manual-text-input" placeholder="Enter query sentence..." value="Graph attention mechanisms capture relationships" style="width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-        <!-- Embedding Method Selection -->
-        <div style="margin-bottom: 8px; font-size: 11px;">
-            <label style="display: flex; align-items: center; gap: 4px;">
-                <input type="radio" name="embedding-method" value="synthetic" checked style="margin: 0;">
-                <span>🎲 Synthetic Embeddings (Fast)</span>
-            </label>
-            <label id="real-embedding-label" style="display: flex; align-items: center; gap: 4px; margin-top: 4px; opacity: 0.5; cursor: not-allowed;" title="Loading model...">
-                <input type="radio" name="embedding-method" value="real" disabled style="margin: 0;">
-                <span id="real-embedding-status">🧠 EmbeddingGemma (Loading...)</span>
-            </label>
-            <div id="model-status" style="font-size: 9px; color: #666; margin-top: 4px; display: none;"></div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 8px;">
-            <button id="update-graph" onclick="updateVisualization()" style="background: #4285f4; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔄 Compute GAT</button>
-        </div>
+    <div id="app">
+        <!-- App content will be mounted here -->
     </div>
-        
-    <!-- Full Width Graph -->
-    <div id='text-as-graph' style="width: 100%; min-height: 400px; position: relative; cursor: grab;" class="draggable-graph"></div>
-    
-    <script>
-        // Make the input box draggable and hoverable
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let initialLeft = 0;
-        let initialTop = 0;
-        
-        const draggableBox = document.querySelector('.text-input-section');
-        const dragHandle = document.querySelector('.drag-handle');
-        
-        // Add hover effects to the entire box
-        draggableBox.addEventListener('mouseenter', () => {
-            draggableBox.style.boxShadow = '0 8px 20px rgba(0,0,0,0.25)';
-            draggableBox.style.transform = 'translateY(-2px)';
-            dragHandle.style.background = '#ff4757';
-        });
-        
-        draggableBox.addEventListener('mouseleave', () => {
-            if (!isDragging) {
-                draggableBox.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                draggableBox.style.transform = 'translateY(0px)';
-                dragHandle.style.background = '#dc3545';
-            }
-        });
-        
-        // Make entire box draggable (not just the handle)
-        function startDrag(e) {
-            // Don't drag if clicking on input elements
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') {
-                console.log('🚫 Drag blocked: clicked on', e.target.tagName);
-                return;
-            }
-            
-            console.log('🎯 Starting drag from', e.target.className || e.target.tagName);
-            
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            
-            const rect = draggableBox.getBoundingClientRect();
-            initialLeft = rect.left;
-            initialTop = rect.top;
-            
-            console.log('📍 Starting drag from position:', initialLeft, initialTop);
-            
-            draggableBox.style.cursor = 'grabbing';
-            draggableBox.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        // Add drag functionality to both handle and box
-        dragHandle.addEventListener('mousedown', startDrag);
-        draggableBox.addEventListener('mousedown', startDrag);
-        
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            
-            const deltaX = e.clientX - dragStartX;
-            const deltaY = e.clientY - dragStartY;
-            
-            const newLeft = Math.max(0, Math.min(window.innerWidth - 350, initialLeft + deltaX));
-            const newTop = Math.max(0, Math.min(window.innerHeight - 200, initialTop + deltaY));
-            
-            console.log('🔄 Dragging to:', newLeft, newTop);
-            
-            draggableBox.style.left = newLeft + 'px';
-            draggableBox.style.top = newTop + 'px';
-            draggableBox.style.bottom = 'auto';
-            draggableBox.style.right = 'auto';
-        });
-        
-        document.addEventListener('mouseup', () => {
-            if (isDragging) {
-                isDragging = false;
-                draggableBox.style.cursor = 'grab';
-                // Reset hover effects when dragging ends
-                draggableBox.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                dragHandle.style.background = '#dc3545';
-            }
-            if (isGraphDragging) {
-                isGraphDragging = false;
-                graphContainer.style.cursor = 'grab';
-            }
-        });
-        
-        // Make the graph draggable
-        let isGraphDragging = false;
-        let graphDragStartX = 0;
-        let graphDragStartY = 0;
-        let graphInitialLeft = 0;
-        let graphInitialTop = 0;
-        
-        const graphContainer = document.querySelector('.draggable-graph');
-        
-        graphContainer.addEventListener('mousedown', (e) => {
-            // Don't drag if clicking on SVG elements (allow interaction)
-            if (e.target.tagName === 'rect' || e.target.tagName === 'text' || e.target.tagName === 'path') {
-                return;
-            }
-            
-            isGraphDragging = true;
-            graphDragStartX = e.clientX;
-            graphDragStartY = e.clientY;
-            
-            const rect = graphContainer.getBoundingClientRect();
-            graphInitialLeft = rect.left;
-            graphInitialTop = rect.top;
-            
-            graphContainer.style.cursor = 'grabbing';
-            graphContainer.style.position = 'fixed';
-            graphContainer.style.left = graphInitialLeft + 'px';
-            graphContainer.style.top = graphInitialTop + 'px';
-            graphContainer.style.zIndex = '999';
-            
-            e.preventDefault();
-        });
-        
-        document.addEventListener('mousemove', (e) => {
-            if (!isGraphDragging) return;
-            
-            const deltaX = e.clientX - graphDragStartX;
-            const deltaY = e.clientY - graphDragStartY;
-            
-            const newLeft = Math.max(-200, Math.min(window.innerWidth - 200, graphInitialLeft + deltaX));
-            const newTop = Math.max(-100, Math.min(window.innerHeight - 100, graphInitialTop + deltaY));
-            
-            graphContainer.style.left = newLeft + 'px';
-            graphContainer.style.top = newTop + 'px';
-        });
-        
-        // Paragraph section toggle functionality
-        function toggleParagraph() {
-            const container = document.getElementById('paragraph-container');
-            const button = document.getElementById('toggle-paragraph');
-            
-            if (container.style.display === 'none') {
-                container.style.display = 'block';
-                button.textContent = '▲';
-            } else {
-                container.style.display = 'none';
-                button.textContent = '▼';
-            }
-        }
-        
-        // Update paragraph character count
-        function updateParagraphCount() {
-            const paraInput = document.getElementById('paragraph-input');
-            const paraCount = document.getElementById('para-char-count');
-            if (paraInput && paraCount) {
-                paraCount.textContent = paraInput.value.length;
-            }
-        }
-        
-        // Add paragraph input event listener when DOM loads
-        document.addEventListener('DOMContentLoaded', () => {
-            const paraInput = document.getElementById('paragraph-input');
-            if (paraInput) {
-                paraInput.addEventListener('input', updateParagraphCount);
-                updateParagraphCount(); // Set initial count
-            }
-        });
-    </script>
+
 </body>
 </html>
